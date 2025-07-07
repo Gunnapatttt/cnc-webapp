@@ -449,7 +449,7 @@
     });
   }
 
-// Submit Start Form via Apps Script RPC
+// Submit Start Form via fetch()
 function submitStart(e) {
   e.preventDefault();
   if (isSubmitting) return;
@@ -458,23 +458,26 @@ function submitStart(e) {
   if (submitBtn) submitBtn.disabled = true;
   showScreen('loading-screen');
   const form = Object.fromEntries(new FormData(e.target).entries());
-  console.log("Submitting START form with data:", { ...qrData, ...form, status: 'OPEN' });
-  
-  google.script.run
-    .withSuccessHandler(() => {
-      isSubmitting = false;
-      if (submitBtn) submitBtn.disabled = false;
-      console.log("START form submitted successfully");
-      showScreen('confirm-screen');
-    })
-    .withFailureHandler((error) => {
-      isSubmitting = false;
-      if (submitBtn) submitBtn.disabled = false;
-      console.error("Error submitting START form:", error);
-      alert("เกิดข้อผิดพลาดในการส่งข้อมูล: " + error.message);
-      showScreen('start-form');
-    })
-    .submitLog({ ...qrData, ...form, status: 'OPEN' });
+  const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbwfRkqJVAw52gPTwICDT3BUYY7miyUHrxSiNlmgpaGlQEy3LLG_NhIjKaikMSsZXl-Erw/exec";
+  fetch(GAS_ENDPOINT, {
+    method: "POST",
+    mode: "no-cors",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ ...qrData, ...form, status: 'OPEN' })
+  })
+  .then(() => {
+    isSubmitting = false;
+    if (submitBtn) submitBtn.disabled = false;
+    showScreen('confirm-screen');
+  })
+  .catch((error) => {
+    isSubmitting = false;
+    if (submitBtn) submitBtn.disabled = false;
+    alert("เกิดข้อผิดพลาดในการส่งข้อมูล: " + error.message);
+    showScreen('start-form');
+  });
 }
 
 function submitStop(e) {
@@ -485,23 +488,26 @@ function submitStop(e) {
   if (submitBtn) submitBtn.disabled = true;
   showScreen('loading-screen');
   const form = Object.fromEntries(new FormData(e.target).entries());
-  console.log("Submitting STOP form with data:", { ...qrData, ...form, status: 'CLOSE' });
-  
-  google.script.run
-    .withSuccessHandler(() => {
-      isSubmitting = false;
-      if (submitBtn) submitBtn.disabled = false;
-      console.log("STOP form submitted successfully");
-      showScreen('confirm-screen');
-    })
-    .withFailureHandler((error) => {
-      isSubmitting = false;
-      if (submitBtn) submitBtn.disabled = false;
-      console.error("Error submitting STOP form:", error);
-      alert("เกิดข้อผิดพลาดในการส่งข้อมูล: " + error.message);
-      showScreen('stop-form');
-    })
-    .submitLog({ ...qrData, ...form, status: 'CLOSE' });
+  const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbwfRkqJVAw52gPTwICDT3BUYY7miyUHrxSiNlmgpaGlQEy3LLG_NhIjKaikMSsZXl-Erw/exec";
+  fetch(GAS_ENDPOINT, {
+    method: "POST",
+    mode: "no-cors",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ ...qrData, ...form, status: 'CLOSE' })
+  })
+  .then(() => {
+    isSubmitting = false;
+    if (submitBtn) submitBtn.disabled = false;
+    showScreen('confirm-screen');
+  })
+  .catch((error) => {
+    isSubmitting = false;
+    if (submitBtn) submitBtn.disabled = false;
+    alert("เกิดข้อผิดพลาดในการส่งข้อมูล: " + error.message);
+    showScreen('stop-form');
+  });
 }
 
 
