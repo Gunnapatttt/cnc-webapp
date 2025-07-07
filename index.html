@@ -1,578 +1,236 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CNC JOB Data Log</title>
-  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-  <link href="https://fonts.googleapis.com/css?family=Sarabun:400,700&display=swap" rel="stylesheet">
-  <style>
-    body {
-      background: #f4f6fb;
-      font-family: 'Sarabun', sans-serif;
-      margin: 0;
-      color: #111;
-    }
-    main {
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 5px 16px 24px 16px;
-      background: #ffffff;
-      min-height: 75vh;
-      border: none;
-      border-radius: 24px;
-      box-sizing: border-box;
-      box-shadow: 0 4px 32px rgba(35, 64, 142, 0.07);
-    }
-
-    h1 {
-      color: #111;
-      text-align: center;
-      font-size: 2.6rem;
-      font-weight: 900;
-      margin-top: 0px;
-      margin-bottom: 0;
-      letter-spacing: 0.02em;
-      line-height: 1.1;
-      text-shadow: none;
-    }
-    h2 {
-      color: #222;
-      text-shadow: none;
-      margin-bottom: 8px;
-    }
-    .instruction-box {
-      background: #e3eafc;
-      color: #111;
-      border: 3px solid #b6c6e6;
-      box-shadow: 0 2px 8px rgba(35, 64, 142, 0.06);
-      font-size: 1.1rem;
-      border-radius: 10px;
-      display: inline-block;
-      padding: 10px 15px;
-      margin-top: 20px;
-      margin-bottom: 30px;
-      letter-spacing: 0.01em;
-      transition: background 0.2s;
-    }
-    .instruction-box span {
-      font-family: 'Sarabun', sans-serif;
-      font-weight: 500;
-      opacity: 0.95;
-    }
-    /* Scanner animation: pulsing border */
-    #qr-reader {
-      width: 90vw;
-      max-width: 400px;
-      min-width: 220px;
-      margin: 18px auto 0 auto;
-      background: #f8fafc;
-      border-radius: 15px;
-      box-shadow: 0 6px 32px rgba(33,150,243,0.13), 0 1.5px 8px rgba(0,0,0,0.07);
-      border: 5px solid #32e0ff31;
-      position: relative;
-      overflow: hidden;
-      transition: box-shadow 0.2s, border 0.2s;
-      min-height: 300px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    /* Scanner animation: pulsing border */
-    #qr-reader.active {
-      animation: pulse-border 1.5s infinite;
-    }
-    @keyframes pulse-border {
-      0% {
-        box-shadow: 0 0 0 0 rgba(0, 153, 255, 0.25), 0 0 0 0 rgba(0, 51, 153, 0.18);
-      }
-      70% {
-        box-shadow: 0 0 0 16px rgba(0, 153, 255, 0.10), 0 0 0 32px rgba(0, 51, 153, 0.06);
-      }
-      100% {
-        box-shadow: 0 0 0 0 rgba(0, 153, 255, 0.25), 0 0 0 0 rgba(0, 51, 153, 0.18);
-      }
-    }
-    /* Optional: animated scanning line */
-    #qr-reader .scan-line {
-      position: absolute;
-      left: 10%; right: 10%; height: 4px;
-      background: linear-gradient(90deg, #0099ff 0%, #003399 100%);
-      border-radius: 2px;
-      animation: scan-move 1.6s linear infinite;
-      z-index: 2;
-      opacity: 0.85;
-    }
-    @keyframes scan-move {
-      0% { top: 12%; }
-      100% { top: 88%; }
-    }
-    .btn-main { background: #222; color: #fff; font-size: 1.5rem; border: none; border-radius: 12px; padding: 30px 40px; margin: 40px 0 0 0; cursor: pointer; }
-    .btn-main:active { background: #444; }
-    .job-info, .form-section { background: #fff; border-radius: 20px; padding: 30px; margin: 30px 0; }
-    .job-info { margin-top: 8px !important; }
-    .job-info p { margin: 8px 0; font-size: 1.2rem; }
-    .btn-row { display: flex; gap: 20px; margin-top: 30px; }
-    .btn-green, .btn-red { flex: 1; font-size: 2rem; padding: 30px 0; border: none; border-radius: 20px; color: #fff; font-weight: bold; cursor: pointer; }
-    .btn-green { background: #00e600; text-shadow: 2px 2px 0 #000; }
-    .btn-red { background: #e60000; text-shadow: 2px 2px 0 #000; }
-    .btn-green:hover, .btn-green:focus { background: #00b800; }
-    .btn-green:active { background: #009900; }
-    .btn-red:hover, .btn-red:focus { background: #b80000; }
-    .btn-red:active { background: #990000; }
-    .btn-back {
-      border: 1.5px solid #b6c6e6;
-      color: #23408e;
-      background: #f4f6fb;
-      font-size: 1rem;
-      margin-bottom: 10px;
-      cursor: pointer;
-      text-align: left;
-      padding: 7px 18px;
-      border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(255,152,0,0.07);
-      transition: background 0.15s, box-shadow 0.15s, border 0.15s;
-      display: inline-block;
-    }
-    .btn-back:hover, .btn-back:focus {
-      background: #e3eafc;
-      border-color: #23408e;
-      box-shadow: 0 4px 12px rgba(255,152,0,0.12);
-    }
-    .btn-back:active {
-      background: #b6c6e6;
-      border-color: #23408e;
-    }
-    .form-section label { font-weight: bold; margin-top: 15px; display: block; }
-    .form-section input, .form-section select { width: 100%; font-size: 1.2rem; padding: 10px; margin-top: 5px; border-radius: 8px; border: 1px solid #888; box-sizing: border-box; }
-    .form-section select {
-      height: 48px;
-      min-width: 0;
-      max-width: 100%;
-      padding-right: 32px; /* add space for arrow */
-      appearance: none;
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      background: url('data:image/svg+xml;utf8,<svg fill="%23333" height="20" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7.293 8.293a1 1 0 011.414 0L10 9.586l1.293-1.293a1 1 0 111.414 1.414l-2 2a1 1 0 01-1.414 0l-2-2a1 1 0 010-1.414z"/></svg>') no-repeat right 16px center/20px 20px;
-    }
-    .form-section input[readonly] { background: #eee; }
-    .form-section .btn-row { margin-top: 30px; }
-    .form-section button[type="submit"] { background: #111; color: #fff; font-size: 1.3rem; border: none; border-radius: 12px; padding: 15px 0; width: 100%; margin-top: 20px; }
-    .confirm-section { background: #fff; border-radius: 30px; padding: 60px 30px; margin: 60px 0; text-align: center; }
-    .confirm-section h2 { font-size: 2rem; margin-bottom: 30px; }
-    .confirm-section button { background: #111; color: #fff; font-size: 1.2rem; border: none; border-radius: 12px; padding: 15px 30px; margin-top: 20px; }
-    @media (max-width: 600px) {
-      .job-info, .form-section, .confirm-section { padding: 15px; }
-      .btn-green, .btn-red { font-size: 1.2rem; padding: 15px 0; }
-    }
-    /* Center scan screen vertically and horizontally */
-    #scan-screen {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 95vh;
-    }
-    button, .btn-main, .btn-green, .btn-red, .btn-back, .confirm-section button {
-      transition: background 0.2s, color 0.2s, box-shadow 0.2s;
-    }
-    button:hover, .btn-main:hover, .btn-green:hover, .btn-red:hover, .btn-back:hover, .confirm-section button:hover {
-      filter: brightness(1.1);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-    }
-    /* Loader spinner for loading screen */
-    .loader-spinner {
-      margin: 0 auto;
-      margin-top: 12px;
-      border: 6px solid #ffe0b2;
-      border-top: 6px solid #ff9800;
-      border-radius: 50%;
-      width: 64px;
-      height: 64px;
-      animation: spin 1s linear infinite;
-      box-shadow: 0 2px 12px rgba(255,152,0,0.13);
-      display: block;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    .form-section label, .job-info, .job-info p, .form-section input[readonly] {
-      color: #222;
-    }
-    .job-info {
-      margin-top: 10px; /* reduce if needed */
-    }
-    .qr-bounding-box {
-      border: none;
-      border-radius: 22px;
-      background: #f4f6fb;
-      padding: 0px 16px 20px 16px;
-      margin: 0 auto 0 auto;
-      max-width: 500px;
-      box-shadow: none;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-top: 10px;
-    }
-    #qr-reader {
-      margin: 18px auto 0 auto;
-    }
-    /* .top-bounding-box {
-      border: none;
-      border-radius: 24px;
-      background: #f4f6fb;
-      padding: 24px 5px 10px 5px;
-      margin: 5px auto 32px auto;
-      max-width: 480px;
-      box-shadow: none;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    } */
-    
-    /* Mobile vertical centering fix */
-    @media (max-width: 600px) {
-      html, body {
-        width: 100vw;
-        overflow-x: hidden;
-        margin: 0;
-        padding: 0;
-      }
-      main {
-        width: 100vw;
-        max-width: 100vw;
-        min-width: 0;
-        margin: 0;
-        padding: 0;
-        border-radius: 0;
-        box-shadow: none;
-        display: flex;
-        flex-direction: column;
-      }
-      .qr-bounding-box {
-        padding: 0 0 12px 0;
-        max-width: 100vw;
-        width: 100vw;
-        margin: 0;
-      }
-      #qr-reader {
-        width: 100%;
-        max-width: 100%;
-        min-width: 0;
-        margin: 0;
-      }
-      .branding-icon {
-        margin-top: 0;
-        margin-bottom: 0;
-      }
-      h1 {
-        margin-top: 8px;
-        margin-bottom: 0;
-      }
-    }
-    @media (max-width: 600px) {
-      .qr-bounding-box {
-        padding: 0px 4vw 12px 4vw;
-        max-width: 98vw;
-      }
-      #qr-reader {
-        width: 100vw;
-        max-width: 98vw;
-        min-width: 0;
-      }
-    }
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-    }
-  </style>
-</head>
-<body>
-<main>
-  <!-- Scan Screen -->
-  <div id="scan-screen">
-    <div class="branding-icon">
-      <img src="logo2024-Black.png" alt="Company Logo" style="height:56px; width:auto; display:block; margin: 10px auto;" />
-    </div>
-      <h1>CNC JOB LOG</h1>
-      <div class="qr-bounding-box">
-        <div style="text-align:center; margin-top:0px; margin-bottom:0;">
-          <span class="instruction-box"><span>แสกน QR Code ตรงนี้</span></span>
-        </div>
-        <div id="qr-reader" class="active"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Job Info Screen -->
-  <div id="info-screen" style="display:none;">
-    <button class="btn-back" style="margin-top:30px; margin-bottom:15px;" onclick="resetAll()">← กลับไปหน้าแสกน QR Code</button>
-    <h1>CNC JOB LOG</h1>
-    <div class="job-info" id="job-info"></div>
-    <div class="btn-row">
-      <button class="btn-green" onclick="showScreen('start-form')">เริ่มงานใหม่</button>
-      <button class="btn-red" onclick="showScreen('stop-form')">งานเสร็จสิ้น</button>
-    </div>
-  </div>
-
-  <!-- Start Form Screen -->
-  <form id="start-form" class="form-section" style="display:none;" onsubmit="submitStart(event)">
-    <button class="btn-back" type="button" onclick="showScreen('info-screen')">← กลับไปก่อนหน้า</button>
-    <h2>เริ่มงาน</h2>
-    <div id="start-job-info" class="job-info"></div>
-    <label>Process No.:</label>
-    <input type="number" name="processNo" required min="1" max="20" inputmode="numeric">
-    <label>Process Name:</label>
-    <select name="processName" required>
-      <option value="">เลือก</option>
-      <option>CL</option><option>MC</option><option>GR</option><option>WC</option><option>ML</option>
-      <option>BL</option><option>CRP</option><option>MRP</option><option>NC</option><option>HN</option><option>QC</option>
-    </select>
-    <label>Step No.:</label>
-    <input type="number" name="stepNo" required min="1" max="20" inputmode="numeric">
-    <label>Machine No.:</label>
-    <input name="machineNo" required style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase()">
-    <label>รหัสพนักงาน:</label>
-    <input name="employeeCode" required inputmode="numeric">
-    <button type="submit">กดเพื่อส่ง</button>
-  </form>
-
-  <!-- Stop Form Screen -->
-  <form id="stop-form" class="form-section" style="display:none;" onsubmit="submitStop(event)">
-    <button class="btn-back" type="button" onclick="showScreen('info-screen')">← กลับไปก่อนหน้า</button>
-    <h2>งานเสร็จสิ้น</h2>
-    <div id="stop-job-info" class="job-info"></div>
-    <label>Process No.:</label>
-    <input type="number" name="processNo" required min="1" max="20" inputmode="numeric">
-    <label>Process Name:</label>
-    <select name="processName" required>
-      <option value="">เลือก</option>
-      <option>CL</option><option>MC</option><option>GR</option><option>WC</option><option>ML</option>
-      <option>BL</option><option>CRP</option><option>MRP</option><option>NC</option><option>HN</option><option>QC</option>
-    </select>
-    <label>Step No.:</label>
-    <input type="number" name="stepNo" required min="1" max="20" inputmode="numeric">
-    <label>รหัสพนักงาน:</label>
-    <input name="employeeCode" required inputmode="numeric">
-    <label>FG จำนวน:</label>
-    <input type="number" name="fg" required>
-    <label>NG จำนวน:</label>
-    <input type="number" name="ng" required>
-    <label>Rework จำนวน:</label>
-    <input type="number" name="rework" required>
-    <button type="submit">กดเพื่อส่ง</button>
-  </form>
-
-  <!-- Confirmation Screen -->
-  <div id="confirm-screen" class="confirm-section" style="display:none;">
-    <h2>ข้อมูลถูกส่งเข้าสู่ระบบเรียบร้อยแล้ว</h2>
-    <button onclick="resetAll()">กลับไปหน้าแสกน QR Code</button>
-  </div>
-  <!-- Loading Screen -->
-  <div id="loading-screen" class="confirm-section" style="display:none;">
-    <div class="loader-spinner" aria-label="กำลังโหลด" role="status"></div>
-    <h2 style="margin-top:32px;">กำลังส่งข้อมูล...</h2>
-  </div>
-</main>
-
-<script>
-  // Global QR data object
-  let qrData = {};
-  let scanHandled = false;
-  let isSubmitting = false;
-
-  // Show only the selected screen
-  function showScreen(id) {
-    document.querySelectorAll('main > *').forEach(el => el.style.display = 'none');
-    document.getElementById(id).style.display = '';
-    if (id === 'scan-screen') {
-      scanHandled = false;
-      startScan();
-      document.getElementById('start-job-info').innerHTML = '';
-      document.getElementById('stop-job-info').innerHTML = '';
-      document.getElementById('job-info').innerHTML = '';
-    } else {
-      if (window.qrScanner) {
-        window.qrScanner.stop().catch(()=>{});
-        window.qrScanner = null;
-      }
-      const qrReader = document.getElementById('qr-reader');
-      qrReader.classList.remove('active');
-      if (qrReader.querySelector('.scan-line')) qrReader.querySelector('.scan-line').remove();
-    }
-    if (id === 'start-form') fillJobInfo('start-job-info');
-    if (id === 'stop-form') fillJobInfo('stop-job-info');
-  }
-
-  // Fill job info fields
-  function fillJobInfo(containerId) {
-    const el = document.getElementById(containerId);
-    el.innerHTML = `
-      <p><strong>Project Number:</strong> <input readonly value="${qrData.projectNo||''}"></p>
-      <p><strong>Customer Name:</strong> <input readonly value="${qrData.customerName||''}"></p>
-      <p><strong>Part Name:</strong> <input readonly value="${qrData.partName||''}"></p>
-      <p><strong>Drawing Number:</strong> <input readonly value="${qrData.drawingNo||''}"></p>
-      <p><strong>Quantity Ordered:</strong> <input readonly value="${qrData.quantityOrdered||''}"></p>
-    `;
-  }
-
-  // Fill job info for info screen
-  function fillInfoScreen() {
-    document.getElementById('job-info').innerHTML = `
-      <p><strong>Project Number:</strong> ${qrData.projectNo||''}</p>
-      <p><strong>Customer Name:</strong> ${qrData.customerName||''}</p>
-      <p><strong>Part Name:</strong> ${qrData.partName||''}</p>
-      <p><strong>Drawing Number:</strong> ${qrData.drawingNo||''}</p>
-      <p><strong>Quantity Ordered:</strong> ${qrData.quantityOrdered||''}</p>
-    `;
-  }
-
-  // Reset all to scan screen
-  function resetAll() {
-    qrData = {};
-    // Reset the forms
-    document.getElementById('start-form').reset();
-    document.getElementById('stop-form').reset();
-    showScreen('scan-screen');
-    // Do NOT hide qr-reader here
-    if (window.qrScanner) {
-      window.qrScanner.stop().catch(()=>{});
-      window.qrScanner = null;
-    }
-  }
-
-  // Start QR scan
-  function startScan() {
-    scanHandled = false;
-    const qrReader = document.getElementById('qr-reader');
-    qrReader.style.display = '';
-    // Reset border to default (no border)
-    qrReader.style.border = '';
-    qrReader.classList.add('active');
-    // Add animated scan line if not present
-    if (!qrReader.querySelector('.scan-line')) {
-      const scanLine = document.createElement('div');
-      scanLine.className = 'scan-line';
-      qrReader.appendChild(scanLine);
-    }
-    // Stop any previous scanner instance
-    if (window.qrScanner) {
-      window.qrScanner.stop().catch(()=>{});
-      window.qrScanner = null;
-    }
-    // Create a new scanner instance
-    window.qrScanner = new Html5Qrcode("qr-reader");
-    Html5Qrcode.getCameras().then(devices => {
-      if (devices && devices.length) {
-        window.qrScanner.start(
-          { facingMode: "environment" },
-          { fps: 10, qrbox: 250 },
-          qr => {
-            if (scanHandled) return;
-            try {
-              qrData = JSON.parse(qr);
-              // Set border to green to indicate success
-              qrReader.style.border = '4px solid #0f0';
-              scanHandled = true;
-              setTimeout(() => {
-                fillInfoScreen();
-                showScreen('info-screen');
-              }, 150); // short delay to show green border
-              window.qrScanner.stop();
-              window.qrScanner = null;
-            } catch {
-              // On error, do NOT set scanHandled, do NOT stop/nullify scanner
-              qrReader.style.border = '4px solid #e00'; // red border for error
-              setTimeout(() => {
-                qrReader.style.border = '';
-              }, 500);
-              alert("QR format ผิดพลาด กรุณาลองใหม่");
-            }
-          }
-        ).catch(err => {
-          alert("ไม่สามารถเริ่มกล้องได้: " + err);
-        });
-      } else {
-        alert("ไม่พบกล้อง");
-      }
-    }).catch(err => {
-      alert("ไม่สามารถเข้าถึงกล้องได้: " + err);
-    });
-  }
-
-// Submit Start Form via fetch()
-function submitStart(e) {
-  e.preventDefault();
-  if (isSubmitting) return;
-  isSubmitting = true;
-  const submitBtn = document.querySelector('#start-form button[type="submit"]');
-  if (submitBtn) submitBtn.disabled = true;
-  showScreen('loading-screen');
-  const form = Object.fromEntries(new FormData(e.target).entries());
-  const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbwfRkqJVAw52gPTwICDT3BUYY7miyUHrxSiNlmgpaGlQEy3LLG_NhIjKaikMSsZXl-Erw/exec";
-  fetch(GAS_ENDPOINT, {
-    method: "POST",
-    mode: "no-cors",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ ...qrData, ...form, status: 'OPEN' })
-  })
-  .then(() => {
-    isSubmitting = false;
-    if (submitBtn) submitBtn.disabled = false;
-    showScreen('confirm-screen');
-  })
-  .catch((error) => {
-    isSubmitting = false;
-    if (submitBtn) submitBtn.disabled = false;
-    alert("เกิดข้อผิดพลาดในการส่งข้อมูล: " + error.message);
-    showScreen('start-form');
-  });
+function doGet() {
+  return HtmlService.createHtmlOutputFromFile('Index');
 }
 
-function submitStop(e) {
-  e.preventDefault();
-  if (isSubmitting) return;
-  isSubmitting = true;
-  const submitBtn = document.querySelector('#stop-form button[type="submit"]');
-  if (submitBtn) submitBtn.disabled = true;
-  showScreen('loading-screen');
-  const form = Object.fromEntries(new FormData(e.target).entries());
-  const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbwfRkqJVAw52gPTwICDT3BUYY7miyUHrxSiNlmgpaGlQEy3LLG_NhIjKaikMSsZXl-Erw/exec";
-  fetch(GAS_ENDPOINT, {
-    method: "POST",
-    mode: "cors",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ ...qrData, ...form, status: 'CLOSE' })
-  })
-  .then(response => response.text())
-  .then(text => {
-    isSubmitting = false;
-    if (submitBtn) submitBtn.disabled = false;
-    if (text.startsWith("ERROR:")) {
-      alert("เกิดข้อผิดพลาด: " + text.replace("ERROR: ", ""));
-      showScreen('stop-form');
-    } else {
-      showScreen('confirm-screen');
+function submitLog(data) {
+  console.log("submitLog called with data:", data);
+  
+  const SHEET_NAME = "CNC LOG";
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+  if (!sheet) {
+    console.error("Sheet 'CNC LOG' not found");
+    throw new Error("Sheet 'CNC LOG' not found");
+  }
+
+  const values = sheet.getDataRange().getValues();
+  const logNo = values.length; // 1-based, header is row 1
+  console.log("Current sheet has", logNo, "rows");
+
+  // Check if this is a START form submission (has machineNo but no fg/ng/rework)
+  if (data.machineNo && !data.fg && !data.ng && !data.rework) {
+    console.log("Processing START form submission");
+    // Always append a new row for START form
+    const row = [
+      logNo, // Log No.
+      data.projectNo || "",
+      data.customerName || "",
+      data.partName || "",
+      "'" + (data.drawingNo || ""),
+      data.quantityOrdered || "",
+      data.processNo || "",
+      data.processName || "",
+      data.stepNo || "",
+      data.machineNo || "",
+      data.employeeCode || "",
+      new Date(), // Start Time
+      "", // End Time
+      "", // Cycle Time
+      "", // FG
+      "", // NG
+      "", // Rework
+      "OPEN"
+    ];
+    console.log("Appending row:", row);
+    sheet.appendRow(row);
+    console.log("Row appended successfully");
+    formatLastRow();
+    return;
+  }
+
+  // For STOP form submission, find and update the matching OPEN row
+  if (data.fg !== undefined || data.ng !== undefined || data.rework !== undefined) {
+    let found = false;
+    for (let i = values.length - 1; i > 0; i--) {
+      const row = values[i];
+      console.log(
+        "Comparing row:",
+        {
+          projectNo: [normalize(row[1]), normalize(data.projectNo)],
+          customerName: [normalize(row[2]), normalize(data.customerName)],
+          partName: [normalize(row[3]), normalize(data.partName)],
+          drawingNo: [normalize(row[4]), normalize(data.drawingNo)],
+          quantityOrdered: [normalize(row[5]), normalize(data.quantityOrdered)],
+          processNo: [normalize(row[6]), normalize(data.processNo)],
+          processName: [normalize(row[7]), normalize(data.processName)],
+          stepNo: [normalize(row[8]), normalize(data.stepNo)],
+          status: row[17]
+        }
+      );
+      if (
+        normalize(row[1]) == normalize(data.projectNo) &&
+        normalize(row[2]) == normalize(data.customerName) &&
+        normalize(row[3]) == normalize(data.partName) &&
+        normalize(row[4]) == normalize(data.drawingNo) &&
+        normalize(row[5]) == normalize(data.quantityOrdered) &&
+        normalize(row[6]) == normalize(data.processNo) &&
+        normalize(row[7]) == normalize(data.processName) &&
+        normalize(row[8]) == normalize(data.stepNo) &&
+        row[17] == "OPEN"
+      ) {
+        // Update this row
+        const startTime = row[11] ? new Date(row[11]) : new Date();
+        const endTime = new Date();
+        const cycleTime = calculateWorkingTime(startTime, endTime);
+
+        // Update columns: End Time (13), Cycle Time (14), FG (15), NG (16), Rework (17), Status (18)
+        sheet.getRange(i + 1, 13).setValue(endTime); // End Time
+        sheet.getRange(i + 1, 14).setValue(cycleTime); // Cycle Time
+        sheet.getRange(i + 1, 15).setValue(data.fg || ""); // FG
+        sheet.getRange(i + 1, 16).setValue(data.ng || ""); // NG
+        sheet.getRange(i + 1, 17).setValue(data.rework || ""); // Rework
+        sheet.getRange(i + 1, 18).setValue("CLOSE"); // Status
+        formatLastRow();
+        found = true;
+        return;
+      }
     }
-  })
-  .catch((error) => {
-    isSubmitting = false;
-    if (submitBtn) submitBtn.disabled = false;
-    alert("เกิดข้อผิดพลาดในการส่งข้อมูล: " + error.message);
-    showScreen('stop-form');
-  });
+    // If not found, check which fields did not match for the most recent OPEN row
+    let lastOpenRow = null;
+    for (let i = values.length - 1; i > 0; i--) {
+      if (values[i][17] == "OPEN") {
+        lastOpenRow = values[i];
+        break;
+      }
+    }
+    if (!lastOpenRow) {
+      throw new Error("No OPEN job found in the log to close.");
+    }
+    let mismatches = [];
+    if (normalize(lastOpenRow[1]) != normalize(data.projectNo)) mismatches.push("Project No.");
+    if (normalize(lastOpenRow[2]) != normalize(data.customerName)) mismatches.push("Customer Name");
+    if (normalize(lastOpenRow[3]) != normalize(data.partName)) mismatches.push("Part Name");
+    if (normalize(lastOpenRow[4]) != normalize(data.drawingNo)) mismatches.push("Drawing No.");
+    if (normalize(lastOpenRow[5]) != normalize(data.quantityOrdered)) mismatches.push("Quantity Ordered");
+    if (normalize(lastOpenRow[6]) != normalize(data.processNo)) mismatches.push("Process No.");
+    if (normalize(lastOpenRow[7]) != normalize(data.processName)) mismatches.push("Process Name");
+    if (normalize(lastOpenRow[8]) != normalize(data.stepNo)) mismatches.push("Step No.");
+    if (lastOpenRow[17] != "OPEN") mismatches.push("Status is not OPEN");
+
+    throw new Error("No matching OPEN job found to close. Mismatched fields: " + mismatches.join(", "));
+  }
 }
 
+function doPost(e) {
+  var data = {};
+  try {
+    data = JSON.parse(e.postData.contents);
+  } catch (err) {
+    return ContentService.createTextOutput("Invalid JSON")
+      .setMimeType(ContentService.MimeType.TEXT)
+      .setHeader("Access-Control-Allow-Origin", "*");
+  }
+  try {
+    submitLog(data);
+    return ContentService.createTextOutput("OK")
+      .setMimeType(ContentService.MimeType.TEXT)
+      .setHeader("Access-Control-Allow-Origin", "*");
+  } catch (err) {
+    return ContentService.createTextOutput("ERROR: " + err.message)
+      .setMimeType(ContentService.MimeType.TEXT)
+      .setHeader("Access-Control-Allow-Origin", "*");
+  }
+}
 
-  // On load, show scan screen
-  showScreen('scan-screen');
-</script>
-</body>
-</html>
+// Add borders and color to the last row based on status
+function formatLastRow() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("CNC LOG");
+  var lastRow = sheet.getLastRow();
+  var lastCol = sheet.getLastColumn();
+
+  // Add borders to the last row
+  sheet.getRange(lastRow, 1, 1, lastCol).setBorder(true, true, true, true, true, true);
+
+  // Get the value of the Status column (assumed to be column 18)
+  var statusCell = sheet.getRange(lastRow, 18);
+  var status = statusCell.getValue();
+
+  // Set background color based on status (only the status cell)
+  if (status === "OPEN") {
+    statusCell.setBackground("#FFF59D"); // Yellow
+  } else if (status === "CLOSE") {
+    statusCell.setBackground("#A5D6A7"); // Green
+  } else {
+    statusCell.setBackground(null); // Default
+  }
+}
+
+function fixDrawingNoColumn() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("CNC LOG");
+  var data = sheet.getDataRange().getValues();
+  for (var i = 1; i < data.length; i++) { // skip header
+    var cell = data[i][4]; // Drawing No. is column 5 (index 4)
+    if (cell instanceof Date) {
+      // Convert date to d/m format
+      var asString = cell.getDate() + '/' + (cell.getMonth() + 1);
+      // Write back as a string with a leading single quote
+      sheet.getRange(i + 1, 5).setValue("'" + asString);
+    }
+  }
+}
+
+// Helper: Calculate working time between two dates, only counting working hours
+function calculateWorkingTime(start, end) {
+  // Working hours: Mon-Sat, 08:30–12:00 and 13:00–16:45
+  const WORK_START = { h: 8, m: 30 };
+  const LUNCH_START = { h: 12, m: 0 };
+  const LUNCH_END = { h: 13, m: 0 };
+  const WORK_END = { h: 16, m: 45 };
+
+  let totalMs = 0;
+  let current = new Date(start);
+
+  while (current < end) {
+    if (isWorkingDay(current)) {
+      // Morning session
+      let morningStart = setTime(current, WORK_START.h, WORK_START.m);
+      let morningEnd = setTime(current, LUNCH_START.h, LUNCH_START.m);
+      if (end <= morningStart) break;
+      if (current < morningStart) current = morningStart;
+      let ms = Math.min(end, morningEnd) - current;
+      if (ms > 0) totalMs += ms;
+      current = morningEnd;
+
+      // Afternoon session
+      let afternoonStart = setTime(current, LUNCH_END.h, LUNCH_END.m);
+      let afternoonEnd = setTime(current, WORK_END.h, WORK_END.m);
+      if (end <= afternoonStart) break;
+      if (current < afternoonStart) current = afternoonStart;
+      ms = Math.min(end, afternoonEnd) - current;
+      if (ms > 0) totalMs += ms;
+      current = afternoonEnd;
+    }
+    // Move to next day
+    current = setTime(new Date(current.getFullYear(), current.getMonth(), current.getDate() + 1), WORK_START.h, WORK_START.m);
+  }
+
+  // Convert ms to HH:mm:ss
+  const totalSeconds = Math.floor(totalMs / 1000);
+  const h = Math.floor(totalSeconds / 3600);
+  const m = Math.floor((totalSeconds % 3600) / 60);
+  const s = totalSeconds % 60;
+  return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+}
+
+function isWorkingDay(date) {
+  const day = date.getDay();
+  // Sunday = 0, Saturday = 6
+  return day >= 1 && day <= 6;
+}
+
+function setTime(date, h, m) {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate(), h, m, 0, 0);
+}
+
+function normalize(str) {
+  return (str || '').toString().trim().toLowerCase();
+}
