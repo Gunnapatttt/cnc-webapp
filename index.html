@@ -233,6 +233,24 @@
       flex-direction: column;
       align-items: center;
     }
+    
+    /* Mobile vertical centering fix */
+    @media (max-width: 600px) {
+      main {
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+      }
+      #scan-screen {
+        min-height: 100vh;
+        height: 100vh;
+        justify-content: center;
+      }
+      .top-bounding-box {
+        padding-top: 10px;
+        padding-bottom: 0;
+        margin-bottom: 0;
+      }
+    }
   </style>
 </head>
 <body>
