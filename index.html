@@ -523,7 +523,6 @@ function submitStart(e) {
   })
   .then(response => response.text())
   .then(text => {
-    console.log('Backend response:', JSON.stringify(text));
     isSubmitting = false;
     if (submitBtn) submitBtn.disabled = false;
     if (text.trim().startsWith("ERROR:")) {
@@ -560,7 +559,6 @@ function submitStop(e) {
   })
   .then(response => response.text())
   .then(text => {
-    console.log('Backend response:', JSON.stringify(text));
     isSubmitting = false;
     if (submitBtn) submitBtn.disabled = false;
     if (text.trim().startsWith("ERROR:")) {
