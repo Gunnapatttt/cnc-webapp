@@ -523,10 +523,11 @@ function submitStart(e) {
   })
   .then(response => response.text())
   .then(text => {
+    console.log('Backend response:', text); // Debug log
     isSubmitting = false;
     if (submitBtn) submitBtn.disabled = false;
     if (text.trim().startsWith("ERROR:")) {
-      alert("เกิดข้อผิดพลาด: " + text.trim().replace("ERROR: ", ""));
+      alert(text.trim().replace("ERROR: ", ""));
       showScreen('start-form');
     } else {
       showScreen('confirm-screen');
@@ -559,10 +560,11 @@ function submitStop(e) {
   })
   .then(response => response.text())
   .then(text => {
+    console.log('Backend response:', text); // Debug log
     isSubmitting = false;
     if (submitBtn) submitBtn.disabled = false;
     if (text.trim().startsWith("ERROR:")) {
-      alert("เกิดข้อผิดพลาด: " + text.trim().replace("ERROR: ", ""));
+      alert(text.trim().replace("ERROR: ", ""));
       showScreen('stop-form');
     } else {
       showScreen('confirm-screen');
