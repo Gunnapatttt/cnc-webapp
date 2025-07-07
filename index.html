@@ -17,8 +17,8 @@
       max-width: 600px;
       margin: 0 auto;
       padding: 5px 16px 24px 16px;
-      background: #fff;
-      min-height: 100vh;
+      background: #ffffff;
+      min-height: 75vh;
       border: none;
       border-radius: 24px;
       box-sizing: border-box;
@@ -50,8 +50,8 @@
       border-radius: 10px;
       display: inline-block;
       padding: 6px 15px;
-      margin-top: -20px;
-      margin-bottom: 10px;
+      margin-top: 20px;
+      margin-bottom: 12px;
       letter-spacing: 0.01em;
       transition: background 0.2s;
     }
@@ -169,7 +169,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-height: 100vh;
+      min-height: 95vh;
     }
     button, .btn-main, .btn-green, .btn-red, .btn-back, .confirm-section button {
       transition: background 0.2s, color 0.2s, box-shadow 0.2s;
@@ -205,19 +205,19 @@
       border: none;
       border-radius: 22px;
       background: #f4f6fb;
-      padding: 24px 16px 32px 16px;
-      margin: 0 auto 32px auto;
-      max-width: 440px;
+      padding: 0px 50px 20px;
+      margin: 0 auto 0 auto;
+      max-width: 500px;
       box-shadow: none;
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin-top: 0;
+      margin-top: 10px;
     }
     #qr-reader {
       margin: 18px auto 0 auto;
     }
-    .top-bounding-box {
+    /* .top-bounding-box {
       border: none;
       border-radius: 24px;
       background: #f4f6fb;
@@ -228,7 +228,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-    }
+    } */
     
     /* Mobile vertical centering fix */
     @media (max-width: 600px) {
@@ -258,11 +258,6 @@
         min-height: 0;
         height: 100%;
       }
-      .top-bounding-box {
-        padding-top: 0;
-        padding-bottom: 0;
-        margin-bottom: 0;
-      }
       .branding-icon {
         margin-top: 0;
         margin-bottom: 0;
@@ -278,13 +273,12 @@
 <main>
   <!-- Scan Screen -->
   <div id="scan-screen">
-    <div class="top-bounding-box">
-      <div class="branding-icon">
-        <img src="logo2024-Black.png" alt="Company Logo" style="height:56px; width:auto; display:block; margin: 10px auto;" />
-      </div>
+    <div class="branding-icon">
+      <img src="logo2024-Black.png" alt="Company Logo" style="height:56px; width:auto; display:block; margin: 10px auto;" />
+    </div>
       <h1>CNC JOB LOG</h1>
       <div class="qr-bounding-box">
-        <div style="text-align:center; margin-top:10px; margin-bottom:0;">
+        <div style="text-align:center; margin-top:0px; margin-bottom:0;">
           <span class="instruction-box"><span>แสกน QR Code ตรงนี้</span></span>
         </div>
         <div id="qr-reader" class="active"></div>
