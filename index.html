@@ -18,7 +18,7 @@
     main {
       max-width: 900px;
       margin: auto auto 0 auto;
-      padding: 0 0 48px 0;
+      padding: 0 0 30px 0;
       background: #fff;
       min-height: 80vh;
       border-radius: 30px;
@@ -54,19 +54,19 @@
       color: #111;
       border: 0px solid #ffffff;
       box-shadow: 0 2px 12px #90caf922;
-      font-size: 1.08rem;
+      font-size: 1.5rem;
       border-radius: 10px;
       display: inline-block;
       padding: 10px 60px;
       margin-top: 5px;
       margin-bottom: 0px;
       letter-spacing: 0.01em;
-      font-weight: 600;
+      font-weight: 300;
       transition: background 0.2s, border 0.2s;
     }
     .instruction-box span {
       font-family: 'Sarabun', 'Inter', Arial, sans-serif;
-      font-weight: 600;
+      font-weight: 300;
       opacity: 1;
     }
     /* Scanner animation: pulsing border */
@@ -318,8 +318,8 @@
       margin-top: 10px; /* reduce if needed */
     }
     .qr-bounding-box {
-      border: 3.5px solid #1976d2;
-      border-radius: 28px;
+      border: 10px inset #1976d2;
+      border-radius: 30px;
       background: #e3eafc;
       box-shadow: 0 2px 16px #90caf922;
       display: flex;
@@ -425,11 +425,11 @@
   <!-- Scan Screen -->
   <div id="scan-screen" style="display: flex; flex-direction: column; align-items: center; justify-content: flex-start; width: 100%;">
     <div class="branding-icon" style="text-align:center;">
-      <img src="logo2024-Black.png" alt="Company Logo" style="height:56px; width:auto; display:block; margin-top: 50px;  margin-bottom: -20px;" />
+      <img src="logo2024-Black.png" alt="Company Logo" style="height:56px; width:auto; display:block; margin-top: 20px;  margin-bottom: -20px;" />
     </div>
     <h1 style="text-align:center;">CNC JOB LOG</h1>
     <div class="qr-bounding-box" style="display: flex; flex-direction: column; align-items: center; justify-content: flex-start;">
-      <div style="text-align:center; margin: 18px 0 12px 0; width: 100%;">
+      <div style="text-align:center; margin: 5px 0 12px 0; width: 100%;">
         <span class="instruction-box"><span>แสกน QR Code ตรงนี้</span></span>
       </div>
       <div id="qr-reader" class="active"></div>
