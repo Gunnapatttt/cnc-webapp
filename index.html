@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CNC JOB Data Log</title>
+  <title>TPT-CNC JOB LOG
+  </title>
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <link href="https://fonts.googleapis.com/css?family=Sarabun:400,700&display=swap" rel="stylesheet">
   <style>
@@ -46,18 +47,18 @@
       color: #111;
       border: 3px solid #b6c6e6;
       box-shadow: 0 2px 8px rgba(35, 64, 142, 0.06);
-      font-size: 1.1rem;
-      border-radius: 10px;
+      font-size: 1rem;
+      border-radius: 20px;
       display: inline-block;
-      padding: 10px 15px;
-      margin-top: 20px;
-      margin-bottom: 30px;
+      padding: 8px 13px;
+      margin-top: 10px;
+      margin-bottom: 20px;
       letter-spacing: 0.01em;
       transition: background 0.2s;
     }
     .instruction-box span {
       font-family: 'Sarabun', sans-serif;
-      font-weight: 500;
+      font-weight: 600;
       opacity: 0.95;
     }
     /* Scanner animation: pulsing border */
@@ -69,7 +70,7 @@
       background: #f8fafc;
       border-radius: 15px;
       box-shadow: 0 6px 32px rgba(33,150,243,0.13), 0 1.5px 8px rgba(0,0,0,0.07);
-      border: 5px solid #32e0ff31;
+      border: 2px solid #32e0ff31;
       position: relative;
       overflow: hidden;
       transition: box-shadow 0.2s, border 0.2s;
@@ -87,7 +88,7 @@
         box-shadow: 0 0 0 0 rgba(0, 153, 255, 0.25), 0 0 0 0 rgba(0, 51, 153, 0.18);
       }
       70% {
-        box-shadow: 0 0 0 16px rgba(0, 153, 255, 0.10), 0 0 0 32px rgba(0, 51, 153, 0.06);
+        box-shadow: 0 0 0 16px rgba(0, 153, 255, 0.10), 0 0 0 5px rgba(0, 51, 153, 0.06);
       }
       100% {
         box-shadow: 0 0 0 0 rgba(0, 153, 255, 0.25), 0 0 0 0 rgba(0, 51, 153, 0.18);
@@ -99,7 +100,7 @@
       left: 10%; right: 10%; height: 4px;
       background: linear-gradient(90deg, #0099ff 0%, #003399 100%);
       border-radius: 2px;
-      animation: scan-move 1.6s linear infinite;
+      animation: scan-move 2s linear infinite;
       z-index: 2;
       opacity: 0.85;
     }
@@ -204,7 +205,7 @@
       margin-top: 10px; /* reduce if needed */
     }
     .qr-bounding-box {
-      border: none;
+      border: 6px solid #b6c6e6;
       border-radius: 22px;
       background: #f4f6fb;
       padding: 0px 16px 20px 16px;
@@ -217,7 +218,7 @@
       margin-top: 10px;
     }
     #qr-reader {
-      margin: 18px auto 0 auto;
+      margin: 0px auto 0 auto;
     }
     /* .top-bounding-box {
       border: none;
@@ -314,7 +315,7 @@
     <div class="job-info" id="job-info"></div>
     <div class="btn-row">
       <button class="btn-green" onclick="showScreen('start-form')">เริ่มงานใหม่</button>
-      <button class="btn-red" onclick="showScreen('stop-form')">งานเสร็จสิ้น</button>
+      <button class="btn-red" onclick="fetchOpenJobsAndShowSelector()">งานเสร็จสิ้น</button>
     </div>
   </div>
 
@@ -329,7 +330,7 @@
     <select name="processName" required>
       <option value="">เลือก</option>
       <option>CL</option><option>MC</option><option>GR</option><option>WC</option><option>ML</option>
-      <option>BL</option><option>CRP</option><option>MRP</option><option>NC</option><option>HN</option><option>QC</option>
+      <option>BL</option><option>CRP</option><option>MRP</option><option>NC</option><option>HN</option><option>QC</option><option>Rework</option>
     </select>
     <label>Step No.:</label>
     <input type="number" name="stepNo" required min="1" max="20" inputmode="numeric">
@@ -351,18 +352,18 @@
     <select name="processName" required>
       <option value="">เลือก</option>
       <option>CL</option><option>MC</option><option>GR</option><option>WC</option><option>ML</option>
-      <option>BL</option><option>CRP</option><option>MRP</option><option>NC</option><option>HN</option><option>QC</option>
+      <option>BL</option><option>CRP</option><option>MRP</option><option>NC</option><option>HN</option><option>QC</option><option>Rework</option>
     </select>
     <label>Step No.:</label>
     <input type="number" name="stepNo" required min="1" max="20" inputmode="numeric">
     <label>รหัสพนักงาน:</label>
     <input name="employeeCode" required inputmode="numeric">
     <label>FG จำนวน:</label>
-    <input type="number" name="fg" required>
+    <input type="number" name="fg" required inputmode="numeric">
     <label>NG จำนวน:</label>
-    <input type="number" name="ng" required>
+    <input type="number" name="ng" required inputmode="numeric">
     <label>Rework จำนวน:</label>
-    <input type="number" name="rework" required>
+    <input type="number" name="rework" required inputmode="numeric">
     <button type="submit">กดเพื่อส่ง</button>
   </form>
 
@@ -578,6 +579,128 @@ function submitStop(e) {
   });
 }
 
+function fetchOpenJobsAndShowSelector() {
+  showOpenJobsLoading();
+  const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbwfRkqJVAw52gPTwICDT3BUYY7miyUHrxSiNlmgpaGlQEy3LLG_NhIjKaikMSsZXl-Erw/exec";
+  const params = new URLSearchParams({
+    mode: 'openJobs',
+    projectNo: qrData.projectNo,
+    partName: qrData.partName
+  });
+  fetch(`${GAS_ENDPOINT}?${params.toString()}`)
+    .then(res => res.json())
+    .then(openJobs => {
+      hideOpenJobsLoading();
+      showOpenJobsTableSelector(openJobs);
+    })
+    .catch(() => {
+      hideOpenJobsLoading();
+      alert('เกิดข้อผิดพลาดในการโหลดข้อมูล');
+    });
+}
+
+function showOpenJobsLoading() {
+  closeOpenJobsSelector(); // Remove any previous modal/overlay
+  let overlay = document.createElement('div');
+  overlay.id = 'open-jobs-overlay';
+  overlay.style = 'position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.35); z-index:999;';
+  document.body.appendChild(overlay);
+  let loader = document.createElement('div');
+  loader.id = 'open-jobs-loading';
+  loader.style = 'position:fixed; left:0; right:0; top:40vh; margin:0 auto; z-index:1000; display:flex; flex-direction:column; align-items:center;';
+  loader.innerHTML = `<div class="loader-spinner" style="width:56px; height:56px; border-width:7px;"></div><div style="margin-top:18px; color:#fff; font-size:1.2rem;">กำลังโหลดข้อมูล...</div>`;
+  document.body.appendChild(loader);
+}
+
+function hideOpenJobsLoading() {
+  let loader = document.getElementById('open-jobs-loading');
+  if (loader) loader.remove();
+  let overlay = document.getElementById('open-jobs-overlay');
+  if (overlay) overlay.remove();
+}
+
+function showOpenJobsTableSelector(openJobs) {
+  // Sort by processName, then processNo (numeric), then stepNo (numeric)
+  openJobs.sort((a, b) => {
+    if (a.processName < b.processName) return -1;
+    if (a.processName > b.processName) return 1;
+    const aProcNo = parseInt(a.processNo, 10);
+    const bProcNo = parseInt(b.processNo, 10);
+    if (aProcNo !== bProcNo) return aProcNo - bProcNo;
+    const aStepNo = parseInt(a.stepNo, 10);
+    const bStepNo = parseInt(b.stepNo, 10);
+    return aStepNo - bStepNo;
+  });
+  // Remove any existing selector or overlay
+  let selectorDiv = document.getElementById('open-jobs-selector');
+  if (selectorDiv) selectorDiv.remove();
+  let overlay = document.getElementById('open-jobs-overlay');
+  if (overlay) overlay.remove();
+
+  // Add semi-transparent overlay
+  overlay = document.createElement('div');
+  overlay.id = 'open-jobs-overlay';
+  overlay.style = 'position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.35); z-index:999;';
+  overlay.onclick = closeOpenJobsSelector;
+  document.body.appendChild(overlay);
+
+  selectorDiv = document.createElement('div');
+  selectorDiv.id = 'open-jobs-selector';
+  selectorDiv.style = 'background: #fff; border-radius: 18px; padding: 24px; box-shadow: 0 2px 24px #0005; max-width: 500px; margin: 30px auto; position: fixed; left: 0; right: 0; top: 10vh; z-index: 1000;';
+
+  let html = `<h2 style="text-align:center;">เลือกงานที่ต้องการจะปิด</h2>`;
+  if (openJobs.length === 0) {
+    html += `<div style="text-align:center; padding: 32px 0;">
+      <div style="font-size:1.3rem; color:#b71c1c; margin-bottom:24px;">ไม่พบข้อมูลการเริ่มของงานนี้</div>
+      <button onclick="closeOpenJobsSelector(); showScreen('info-screen');" style="padding:10px 32px; border-radius:10px; background:#1976d2; color:#fff; border:none; font-size:1.1rem; cursor:pointer;">กลับ</button>
+    </div>`;
+  } else {
+    html += `<table style="width:100%; border-collapse:collapse; margin: 0 auto;">
+      <thead>
+        <tr>
+          <th>Process Name</th>
+          <th>Process No.</th>
+          <th>Step No.</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>`;
+    openJobs.forEach((job, idx) => {
+      html += `<tr>
+        <td style="text-align:center;">${job.processName}</td>
+        <td style="text-align:center;">${job.processNo}</td>
+        <td style="text-align:center;">${job.stepNo}</td>
+        <td><button onclick="selectOpenJob(${idx})" style="padding:6px 18px; border-radius:8px; background:#1976d2; color:#fff; border:none; cursor:pointer;">เลือก</button></td>
+      </tr>`;
+    });
+    html += `</tbody></table>`;
+    html += `<div style="text-align:center; margin-top:18px;"><button onclick="closeOpenJobsSelector()" style="padding:8px 24px; border-radius:8px; background:#aaa; color:#fff; border:none; cursor:pointer;">ยกเลิก</button></div>`;
+  }
+  selectorDiv.innerHTML = html;
+  document.body.appendChild(selectorDiv);
+
+  // Store jobs globally for selection
+  window._openJobs = openJobs;
+}
+
+function selectOpenJob(idx) {
+  const job = window._openJobs[idx];
+  // Prefill STOP form fields
+  document.querySelector('#stop-form [name="processNo"]').value = job.processNo;
+  document.querySelector('#stop-form [name="processName"]').value = job.processName;
+  document.querySelector('#stop-form [name="stepNo"]').value = job.stepNo;
+  closeOpenJobsSelector();
+  showScreen('stop-form');
+}
+
+function closeOpenJobsSelector() {
+  let selectorDiv = document.getElementById('open-jobs-selector');
+  if (selectorDiv) selectorDiv.remove();
+  let overlay = document.getElementById('open-jobs-overlay');
+  if (overlay) overlay.remove();
+  let loader = document.getElementById('open-jobs-loading');
+  if (loader) loader.remove();
+}
 
   // On load, show scan screen
   showScreen('scan-screen');
