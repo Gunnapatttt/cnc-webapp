@@ -133,14 +133,21 @@
       transition: background 0.2s, box-shadow 0.2s;
     }
     .btn-main:active { background: #1976d2; color: #fff; }
-    .job-info, .form-section {
+    .form-section {
       background: #f4f4f4;
       border-radius: 22px;
       padding: 38px 40px;
       margin: 36px 0;
       box-shadow: 0 2px 16px #90caf922;
+      
     }
     .job-info {
+      background: #f4f4f4;
+      border-radius: 22px;
+      padding: 20px 20px;
+      padding-top: 10px;
+      margin: 36px 0;
+      box-shadow: 0 2px 16px #90caf922;
       margin-top: 8px !important;
       width: 95%;
       max-width: 1000px;
@@ -186,7 +193,7 @@
       color: #1976d2;
       background: #e3eafc;
       font-size: 1rem;
-      margin-bottom: 30px;
+      margin-bottom: 15px;
       cursor: pointer;
       text-align: left;
       padding: 7px 18px;
@@ -329,7 +336,7 @@
       color: #111;
     }
     .job-info {
-      margin-top: 10px; /* reduce if needed */
+      margin-top: 5px; /* reduce if needed */
     }
     .qr-bounding-box {
       border: 10px inset #1976d2;
@@ -487,7 +494,7 @@
   <form id="stop-form" class="form-section" style="display:none;" onsubmit="submitStop(event)">
     <button class="btn-back" type="button" onclick="showScreen('info-screen')">← กลับไปก่อนหน้า</button>
     <h2>งานเสร็จสิ้น</h2>
-    <div id="stop-job-info" class="job-info"></div>
+    <div id="stop-job-info" class="job-info">  </div>
     <label>Process Name:</label>
     <select name="processName" required>
       <option value="">เลือก</option>
