@@ -835,8 +835,8 @@ function showOpenJobsTableSelector(openJobs) {
 function selectOpenJob(idx) {
   const job = window._openJobs[idx];
   // Prefill STOP form fields
-  document.querySelector('#stop-form [name="processNo"]').value = job.processNo;
   document.querySelector('#stop-form [name="processName"]').value = job.processName;
+  document.querySelector('#stop-form [name="processNo"]').value = job.processNo;
   document.querySelector('#stop-form [name="stepNo"]').value = job.stepNo;
   closeOpenJobsSelector();
   showScreen('stop-form');
