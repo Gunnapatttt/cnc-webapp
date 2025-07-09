@@ -2,19 +2,16 @@
   <html lang="th">
   <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TPT-CNC JOB LOG
     </title>
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <link href="https://fonts.googleapis.com/css?family=Sarabun:400,700&display=swap" rel="stylesheet">
     <style>
-      /* Responsive base styles */
       body {
-        font-size: 18px;
-        margin: 0;
-        padding: 0;
         background: linear-gradient(135deg, #e3eafc 0%, #f4f4f4 100%);
         font-family: 'Sarabun', 'Inter', Arial, sans-serif;
+        margin: 0;
         color: #111;
         min-height: 100vh;
       }
@@ -74,9 +71,9 @@
       }
       /* Scanner animation: pulsing border */
       #qr-reader {
-        width: 100%;
-        max-width: 400px;
-        aspect-ratio: 1 / 1;
+        width: 80vw;
+        max-width: 600px;
+        min-width: 220px;
         margin: 18px auto 0 auto;
         background: #f4f4f4cc;
         border-radius: 22px;
@@ -84,42 +81,12 @@
         border: 0px solid #1976d2;
         position: relative;
         overflow: hidden;
-        min-width: 220px;
-        min-height: 220px;
+        transition: box-shadow 0.2s, border 0.2s;
+        min-height: 340px;
         display: flex;
         align-items: center;
         justify-content: center;
         backdrop-filter: blur(4px);
-      }
-      /* Fallback for browsers without aspect-ratio support */
-      @supports not (aspect-ratio: 1 / 1) {
-        #qr-reader {
-          height: 0;
-          padding-bottom: 100%; /* 1:1 Aspect Ratio */
-        }
-        #qr-reader > * {
-          position: absolute;
-          top: 0; left: 0; right: 0; bottom: 0;
-        }
-      }
-      /* Responsive override for mobile */
-      @media (max-width: 600px) {
-        #qr-reader {
-          width: 95vw;
-          max-width: 95vw;
-          max-height: 60vh;
-          aspect-ratio: 1 / 1;
-          min-width: 0;
-          min-height: 0;
-        }
-        .qr-bounding-box {
-          width: 60vw !important;
-          height: 60vw !important;
-          left: 17.5vw !important;
-          top: calc((60vh - 60vw) / 2) !important;
-          max-width: 60vh !important;
-          max-height: 60vh !important;
-        }
       }
       /* Scanner animation: pulsing border */
       #qr-reader.active {
@@ -472,38 +439,6 @@
         box-sizing: border-box;
       }
 
-      /* Responsive styles for mobile */
-      @media (max-width: 600px) {
-        body {
-          font-size: 16px;
-          padding: 8px;
-        }
-        .form-container, .job-info-box, .button-row {
-          max-width: 100%;
-          padding: 0 4px;
-        }
-        label, input, select, button {
-          font-size: 1em;
-          width: 100%;
-          box-sizing: border-box;
-        }
-        .button-row {
-          flex-direction: column;
-          gap: 12px;
-        }
-        .job-selection-table {
-          font-size: 0.95em;
-          overflow-x: auto;
-          display: block;
-        }
-        /* Adjust QR scanner overlay for mobile */
-        .qr-bounding-box {
-          width: 80vw !important;
-          height: 80vw !important;
-          left: 10vw !important;
-          top: 10vw !important;
-        }
-      }
     </style>
   </head>
   <body>
