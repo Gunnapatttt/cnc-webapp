@@ -142,7 +142,7 @@
       
     }
     .job-info {
-      background: #f4f4f4;
+      background: #ffcca3;
       border-radius: 22px;
       padding: 20px 20px;
       padding-top: 10px;
@@ -154,7 +154,7 @@
       margin-left: auto;
       margin-right: auto;
     }
-    .job-info p { margin: 12px 0; font-size: 1.25rem; color: #111; }
+    .job-info p { margin: 12px 0; font-weight: 500; font-size: 1.25rem; color: #111; }
     .btn-row {
       display: flex;
       gap: 50px;
@@ -835,6 +835,7 @@ function showOpenJobsTableSelector(openJobs) {
           <th>Process Name</th>
           <th>Process No.</th>
           <th>Step No.</th>
+          <th>Machine No.</th>
           <th></th>
         </tr>
       </thead>
@@ -844,6 +845,7 @@ function showOpenJobsTableSelector(openJobs) {
         <td style="text-align:center;">${job.processName}</td>
         <td style="text-align:center;">${job.processNo}</td>
         <td style="text-align:center;">${job.stepNo}</td>
+        <td style="text-align:center;">${job.machineNo || ''}</td>
         <td><button onclick="selectOpenJob(${idx})" style="padding:6px 18px; border-radius:8px; background:#1976d2; color:#fff; border:none; cursor:pointer;">เลือก</button></td>
       </tr>`;
     });
@@ -863,6 +865,9 @@ function selectOpenJob(idx) {
   document.querySelector('#stop-form [name="processName"]').value = job.processName;
   document.querySelector('#stop-form [name="processNo"]').value = job.processNo;
   document.querySelector('#stop-form [name="stepNo"]').value = job.stepNo;
+  if (job.machineNo) {
+    document.querySelector('#stop-form [name="machineNo"]').value = job.machineNo;
+  }
   closeOpenJobsSelector();
   showScreen('stop-form');
 }
@@ -880,4 +885,4 @@ function closeOpenJobsSelector() {
   showScreen('scan-screen');
 </script>
 </body>
-</html>  <!DOCTYPE html>
+</html>
