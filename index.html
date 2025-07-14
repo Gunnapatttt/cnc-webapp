@@ -1,858 +1,883 @@
-  <!DOCTYPE html>
-  <html lang="th">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TPT-CNC JOB LOG
-    </title>
-    <link rel="icon" type="image/png" href="JOBLOG LOGO.png">
-    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-    <link href="https://fonts.googleapis.com/css?family=Sarabun:400,700&display=swap" rel="stylesheet">
-    <style>
-      body {
-        background: linear-gradient(135deg, #e3eafc 0%, #f4f4f4 100%);
-        font-family: 'Sarabun', 'Inter', Arial, sans-serif;
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TPT-CNC JOB LOG
+  </title>
+  <link rel="icon" type="image/png" href="JOBLOG LOGO.png">
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <link href="https://fonts.googleapis.com/css?family=Sarabun:400,700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(135deg, #e3eafc 0%, #f4f4f4 100%);
+      font-family: 'Sarabun', 'Inter', Arial, sans-serif;
+      margin: 0;
+      color: #111;
+      min-height: 100vh;
+    }
+    main {
+      max-width: 900px;
+      margin: 10px auto 0 auto;
+      padding: 0 0 30px 0;
+      background: #fff;
+      min-height: 80vh;
+      border-radius: 30px;
+      box-sizing: border-box;
+      box-shadow: 0 8px 40px 0 #90caf933, 0 1.5px 8px #bdbdbd33;
+      backdrop-filter: blur(2.5px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    h1 {
+      color: #111;
+      text-align: center;
+      font-size: 2.8rem;
+      font-weight: 800;
+      margin-top: 20px;
+      margin-bottom: 10;
+      letter-spacing: 0.01em;
+      line-height: 1.1;
+      text-shadow: 0 2px 8px #e3eafc;
+    }
+    h2 {
+      color: #111;
+      text-shadow: 0 1px 4px #e3eafc;
+      margin-bottom: 12px;
+      font-weight: 700;
+      font-size: 2rem;
+    }
+    .instruction-box {
+      background: transparent;
+      color: #111;
+      box-shadow: 0 2px 12px #90caf922;
+      font-size: 1.5rem;
+      border-radius: 10px;
+      display: inline-block;
+      padding: 10px 60px;
+      margin-top: 5px;
+      margin-bottom: 0px;
+      letter-spacing: 0.01em;
+      font-weight: 300;
+      transition: background 0.2s, border 0.2s;
+    }
+    .instruction-box span {
+      font-family: 'Sarabun', 'Inter', Arial, sans-serif;
+      font-weight: 300;
+      opacity: 1;
+    }
+    /* Scanner animation: pulsing border */
+    #qr-reader {
+      width: 80vw;
+      max-width: 600px;
+      min-width: 220px;
+      margin: 18px auto 0 auto;
+      background: #f4f4f4cc;
+      border-radius: 22px;
+      box-shadow: 0 8px 32px 0 #90caf933, 0 1.5px 8px #bdbdbd33;
+      border: 0px solid #1976d2;
+      position: relative;
+      overflow: hidden;
+      transition: box-shadow 0.2s, border 0.2s;
+      min-height: 340px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+    /* Scanner animation: pulsing border */
+    #qr-reader.active {
+      animation: pulse-border 1.5s infinite;
+      box-shadow: 0 0 0 15px #90caf988, 0 8px 32px 0 #90caf933;
+    }
+    @keyframes pulse-border {
+      0% {
+        box-shadow: 0 0 0 0 #90caf988, 0 0 0 0 #90caf933;
+      }
+      70% {
+        box-shadow: 0 0 0 18px #90caf933, 0 0 0 8px #90caf922;
+      }
+      100% {
+        box-shadow: 0 0 0 0 #90caf988, 0 0 0 0 #90caf933;
+      }
+    }
+    /* Optional: animated scanning line */
+    #qr-reader .scan-line {
+      position: absolute;
+      left: 10%; right: 10%; height: 4px;
+      background: linear-gradient(90deg, #90caf9 0%, #1976d2 100%);
+      border-radius: 2px;
+      animation: scan-move 1.3s linear infinite;
+      z-index: 2;
+      opacity: 0.92;
+      box-shadow: 0 0 12px #1976d288;
+    }
+    @keyframes scan-move {
+      0% { top: 12%; }
+      100% { top: 120%; }
+    }
+    .btn-main {
+      background: linear-gradient(90deg, #90caf9 0%, #1976d2 100%);
+      color: #111;
+      font-size: 1.5rem;
+      border: none;
+      border-radius: 14px;
+      padding: 30px 40px;
+      margin: 40px 0 0 0;
+      cursor: pointer;
+      font-weight: 700;
+      box-shadow: 0 2px 12px #90caf944;
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+    .btn-main:active { background: #1976d2; color: #fff; }
+    .form-section {
+      background: #f4f4f4;
+      border-radius: 22px;
+      padding: 38px 40px;
+      margin: 36px 0;
+      box-shadow: 0 2px 16px #90caf922;
+      
+    }
+    .job-info {
+      background: #f4f4f4;
+      border-radius: 22px;
+      padding: 20px 20px;
+      padding-top: 10px;
+      margin: 36px 0;
+      box-shadow: 0 2px 16px #90caf922;
+      margin-top: 8px !important;
+      width: 95%;
+      max-width: 1000px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .job-info p { margin: 12px 0; font-size: 1.25rem; color: #111; }
+    .btn-row {
+      display: flex;
+      gap: 50px;
+      margin-top: 30px;
+      width: 95%;
+      max-width: 1000px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .btn-green, .btn-red {
+      flex: 1;
+      font-size: 2rem;
+      padding: 20px 100px;
+      border: none;
+      border-radius: 18px;
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 2px 12px #1976d244;
+      transition: background 0.18s, box-shadow 0.18s;
+    }
+    .btn-green {
+      background: linear-gradient(90deg, #00c853 0%, #43e97ad5 100%);
+      text-shadow: 1px 2px 8px #222a, 0 1px 0 #fff2;
+    }
+    .btn-red {
+      background: linear-gradient(90deg, #e53935 0%, #ff5252d5 100%);
+      text-shadow: 1px 2px 8px #222a, 0 1px 0 #fff2;
+    }
+    .btn-green:hover, .btn-green:focus { background: #00b800; }
+    .btn-green:active { background: #009900; }
+    .btn-red:hover, .btn-red:focus { background: #b80000; }
+    .btn-red:active { background: #990000; }
+    .btn-back {
+      border: 1.5px solid #90caf9;
+      color: #1976d2;
+      background: #e3eafc;
+      font-size: 1rem;
+      margin-bottom: 15px;
+      cursor: pointer;
+      text-align: left;
+      padding: 7px 18px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px #90caf922;
+      transition: background 0.15s, box-shadow 0.15s, border 0.15s;
+      display: inline-block;
+      font-weight: 600;
+    }
+    .btn-back:hover, .btn-back:focus {
+      background: #bbdefb;
+      border-color: #1976d2;
+      box-shadow: 0 4px 12px #90caf922;
+    }
+    .btn-back:active {
+      background: #90caf9;
+      border-color: #1976d2;
+      color: #fff;
+    }
+    .form-section label { font-weight: bold; margin-top: 15px; display: block; }
+    .form-section input, .form-section select {
+      width: 100%;
+      font-size: 1.25rem;
+      padding: 16px 16px;
+      margin-top: 8px;
+      border-radius: 12px;
+      border: 1.5px solid #90caf9;
+      box-sizing: border-box;
+      background: transparent;
+      color: #111;
+      transition: border 0.18s, box-shadow 0.18s;
+    }
+    .form-section input:focus, .form-section select:focus {
+      border: 1.5px solid #1976d2;
+      box-shadow: 0 2px 8px #90caf944;
+      outline: none;
+    }
+    .form-section select {
+      height: 48px !important;
+      line-height: 48px !important;
+      min-width: 0;
+      max-width: 100%;
+      padding: 0 16px !important;
+      border-radius: 12px !important;
+      border: 1.5px solid #90caf9 !important;
+      background-color: #e3eeff !important;
+      color: #111 !important;
+      font-size: 1.25rem !important;
+      font-family: 'Sarabun', 'Inter', Arial, sans-serif !important;
+      appearance: none !important;
+      -webkit-appearance: none !important;
+      -moz-appearance: none !important;
+      background: url('data:image/svg+xml;utf8,<svg fill="%231976d2" height="20" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7.293 8.293a1 1 0 011.414 0L10 9.586l1.293-1.293a1 1 0 111.414 1.414l-2 2a1 1 0 01-1.414 0l-2-2a1 1 0 010-1.414z"/></svg>') no-repeat right 16px center/20px 20px !important;
+      vertical-align: middle !important;
+      box-sizing: border-box !important;
+      margin-top: 8px !important;
+      display: block;
+    }
+    .form-section input[readonly] { background: transparent; }
+    .form-section .btn-row { margin-top: 30px; }
+    .form-section button[type="submit"] {
+      background: linear-gradient(90deg, #90caf9 0%, #1976d2 100%);
+      color: #111;
+      font-size: 1.3rem;
+      border: none;
+      border-radius: 12px;
+      padding: 15px 0;
+      width: 100%;
+      margin-top: 20px;
+      font-weight: 700;
+      box-shadow: 0 2px 8px #90caf944;
+      transition: background 0.18s, color 0.18s;
+    }
+    .form-section button[type="submit"]:hover, .form-section button[type="submit"]:focus {
+      background: #1976d2;
+      color: #fff;
+    }
+    .confirm-section { background: #fff; border-radius: 30px; padding: 60px 30px; margin: 60px 0; text-align: center; }
+    .confirm-section h2 { font-size: 2rem; margin-bottom: 30px; }
+    .confirm-section button {
+      background: linear-gradient(90deg, #90caf9 0%, #1976d2 100%);
+      color: #111;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 12px;
+      padding: 15px 30px;
+      margin-top: 20px;
+      font-weight: 700;
+      box-shadow: 0 2px 8px #90caf944;
+      transition: background 0.18s, color 0.18s;
+    }
+    .confirm-section button:hover, .confirm-section button:focus {
+      background: #1976d2;
+      color: #fff;
+    }
+    @media (max-width: 600px) {
+      main { max-width: 100vw; border-radius: 0; }
+      .job-info, .form-section, .confirm-section { padding: 15px; }
+      .btn-green, .btn-red { font-size: 1.2rem; padding: 15px 0; }
+      .qr-bounding-box, #qr-reader {
+        max-width: 98vw;
+        aspect-ratio: 4/3.2;
+      }
+    }
+    /* Center scan screen vertically and horizontally */
+    #scan-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 60vh;
+      margin: 0 auto;
+    }
+    button, .btn-main, .btn-green, .btn-red, .btn-back, .confirm-section button {
+      transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    }
+    button:hover, .btn-main:hover, .btn-green:hover, .btn-red:hover, .btn-back:hover, .confirm-section button:hover {
+      filter: brightness(1.1);
+      box-shadow: 0 2px 8px #90caf944;
+    }
+    /* Loader spinner for loading screen */
+    .loader-spinner {
+      margin: 0 auto;
+      margin-top: 12px;
+      border: 6px solid #e3eafc;
+      border-top: 6px solid #1976d2;
+      border-radius: 50%;
+      width: 64px;
+      height: 64px;
+      animation: spin 1s linear infinite;
+      box-shadow: 0 2px 12px #90caf944;
+      display: block;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .form-section label, .job-info, .job-info p, .form-section input[readonly] {
+      color: #111;
+    }
+    .job-info {
+      margin-top: 5px; /* reduce if needed */
+    }
+    .qr-bounding-box {
+      border: 10px inset #1976d2;
+      border-radius: 50px;
+      background: #e3eafc;
+      box-shadow: 0 2px 16px #90caf922;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+      width: 100%;
+      max-width: 680px;
+      aspect-ratio: auto;
+      padding: 0px 0 30px 0;
+      height: auto;
+    }
+    #qr-reader {
+      width: 100%;
+      max-width: 600px;
+      aspect-ratio: auto;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: auto;
+      box-shadow: 0 0 0 0 transparent;
+    }
+    /* .top-bounding-box {
+      border: none;
+      border-radius: 24px;
+      background: #f4f6fb;
+      padding: 24px 5px 10px 5px;
+      margin: 5px auto 32px auto;
+      max-width: 480px;
+      box-shadow: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    } */
+    
+    /* Mobile vertical centering fix */
+    @media (max-width: 600px) {
+      html, body {
+        width: 100vw;
+        overflow-x: hidden;
         margin: 0;
-        color: #111;
-        min-height: 100vh;
+        padding: 0;
       }
       main {
-        max-width: 900px;
-        margin: 10px auto 0 auto;
-        padding: 0 0 30px 0;
-        background: #fff;
-        min-height: 80vh;
-        border-radius: 30px;
-        box-sizing: border-box;
-        box-shadow: 0 8px 40px 0 #90caf933, 0 1.5px 8px #bdbdbd33;
-        backdrop-filter: blur(2.5px);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: flex-start;
-      }
-
-      h1 {
-        color: #111;
-        text-align: center;
-        font-size: 2.8rem;
-        font-weight: 800;
-        margin-top: 20px;
-        margin-bottom: 10;
-        letter-spacing: 0.01em;
-        line-height: 1.1;
-        text-shadow: 0 2px 8px #e3eafc;
-      }
-      h2 {
-        color: #111;
-        text-shadow: 0 1px 4px #e3eafc;
-        margin-bottom: 12px;
-        font-weight: 700;
-        font-size: 2rem;
-      }
-      .instruction-box {
-        background: transparent;
-        color: #111;
-        box-shadow: 0 2px 12px #90caf922;
-        font-size: 1.5rem;
-        border-radius: 10px;
-        display: inline-block;
-        padding: 10px 60px;
-        margin-top: 5px;
-        margin-bottom: 0px;
-        letter-spacing: 0.01em;
-        font-weight: 300;
-        transition: background 0.2s, border 0.2s;
-      }
-      .instruction-box span {
-        font-family: 'Sarabun', 'Inter', Arial, sans-serif;
-        font-weight: 300;
-        opacity: 1;
-      }
-      /* Scanner animation: pulsing border */
-      #qr-reader {
-        width: 80vw;
-        max-width: 600px;
-        min-width: 220px;
-        margin: 18px auto 0 auto;
-        background: #f4f4f4cc;
-        border-radius: 22px;
-        box-shadow: 0 8px 32px 0 #90caf933, 0 1.5px 8px #bdbdbd33;
-        border: 0px solid #1976d2;
-        position: relative;
-        overflow: hidden;
-        transition: box-shadow 0.2s, border 0.2s;
-        min-height: 340px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        backdrop-filter: blur(4px);
-      }
-      /* Scanner animation: pulsing border */
-      #qr-reader.active {
-        animation: pulse-border 1.5s infinite;
-        box-shadow: 0 0 0 15px #90caf988, 0 8px 32px 0 #90caf933;
-      }
-      @keyframes pulse-border {
-        0% {
-          box-shadow: 0 0 0 0 #90caf988, 0 0 0 0 #90caf933;
-        }
-        70% {
-          box-shadow: 0 0 0 18px #90caf933, 0 0 0 8px #90caf922;
-        }
-        100% {
-          box-shadow: 0 0 0 0 #90caf988, 0 0 0 0 #90caf933;
-        }
-      }
-      /* Optional: animated scanning line */
-      #qr-reader .scan-line {
-        position: absolute;
-        left: 10%; right: 10%; height: 4px;
-        background: linear-gradient(90deg, #90caf9 0%, #1976d2 100%);
-        border-radius: 2px;
-        animation: scan-move 1.3s linear infinite;
-        z-index: 2;
-        opacity: 0.92;
-        box-shadow: 0 0 12px #1976d288;
-      }
-      @keyframes scan-move {
-        0% { top: 12%; }
-        100% { top: 120%; }
-      }
-      .btn-main {
-        background: linear-gradient(90deg, #90caf9 0%, #1976d2 100%);
-        color: #111;
-        font-size: 1.5rem;
-        border: none;
-        border-radius: 14px;
-        padding: 30px 40px;
-        margin: 40px 0 0 0;
-        cursor: pointer;
-        font-weight: 700;
-        box-shadow: 0 2px 12px #90caf944;
-        transition: background 0.2s, box-shadow 0.2s;
-      }
-      .btn-main:active { background: #1976d2; color: #fff; }
-      .form-section {
-        background: #f4f4f4;
-        border-radius: 22px;
-        padding: 38px 40px;
-        margin: 36px 0;
-        box-shadow: 0 2px 16px #90caf922;
-        
-      }
-      .job-info {
-        background: #f4f4f4;
-        border-radius: 22px;
-        padding: 20px 20px;
-        padding-top: 10px;
-        margin: 36px 0;
-        box-shadow: 0 2px 16px #90caf922;
-        margin-top: 8px !important;
-        width: 95%;
-        max-width: 1000px;
-        margin-left: auto;
-        margin-right: auto;
-      }
-      .job-info p { margin: 12px 0; font-size: 1.25rem; color: #111; }
-      .btn-row {
-        display: flex;
-        gap: 50px;
-        margin-top: 30px;
-        width: 95%;
-        max-width: 1000px;
-        margin-left: auto;
-        margin-right: auto;
-      }
-      .btn-green, .btn-red {
-        flex: 1;
-        font-size: 2rem;
-        padding: 20px 100px;
-        border: none;
-        border-radius: 18px;
-        color: #fff;
-        font-weight: 700;
-        cursor: pointer;
-        box-shadow: 0 2px 12px #1976d244;
-        transition: background 0.18s, box-shadow 0.18s;
-      }
-      .btn-green {
-        background: linear-gradient(90deg, #00c853 0%, #43e97ad5 100%);
-        text-shadow: 1px 2px 8px #222a, 0 1px 0 #fff2;
-      }
-      .btn-red {
-        background: linear-gradient(90deg, #e53935 0%, #ff5252d5 100%);
-        text-shadow: 1px 2px 8px #222a, 0 1px 0 #fff2;
-      }
-      .btn-green:hover, .btn-green:focus { background: #00b800; }
-      .btn-green:active { background: #009900; }
-      .btn-red:hover, .btn-red:focus { background: #b80000; }
-      .btn-red:active { background: #990000; }
-      .btn-back {
-        border: 1.5px solid #90caf9;
-        color: #1976d2;
-        background: #e3eafc;
-        font-size: 1rem;
-        margin-bottom: 15px;
-        cursor: pointer;
-        text-align: left;
-        padding: 7px 18px;
-        border-radius: 12px;
-        box-shadow: 0 2px 6px #90caf922;
-        transition: background 0.15s, box-shadow 0.15s, border 0.15s;
-        display: inline-block;
-        font-weight: 600;
-      }
-      .btn-back:hover, .btn-back:focus {
-        background: #bbdefb;
-        border-color: #1976d2;
-        box-shadow: 0 4px 12px #90caf922;
-      }
-      .btn-back:active {
-        background: #90caf9;
-        border-color: #1976d2;
-        color: #fff;
-      }
-      .form-section label { font-weight: bold; margin-top: 15px; display: block; }
-      .form-section input, .form-section select {
-        width: 100%;
-        font-size: 1.25rem;
-        padding: 16px 16px;
-        margin-top: 8px;
-        border-radius: 12px;
-        border: 1.5px solid #90caf9;
-        box-sizing: border-box;
-        background: transparent;
-        color: #111;
-        transition: border 0.18s, box-shadow 0.18s;
-      }
-      .form-section input:focus, .form-section select:focus {
-        border: 1.5px solid #1976d2;
-        box-shadow: 0 2px 8px #90caf944;
-        outline: none;
-      }
-      .form-section select {
-        height: 48px !important;
-        line-height: 48px !important;
+        width: 100vw;
+        max-width: 100vw;
         min-width: 0;
-        max-width: 100%;
-        padding: 0 16px !important;
-        border-radius: 12px !important;
-        border: 1.5px solid #90caf9 !important;
-        background-color: #e3eeff !important;
-        color: #111 !important;
-        font-size: 1.25rem !important;
-        font-family: 'Sarabun', 'Inter', Arial, sans-serif !important;
-        appearance: none !important;
-        -webkit-appearance: none !important;
-        -moz-appearance: none !important;
-        background: url('data:image/svg+xml;utf8,<svg fill="%231976d2" height="20" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7.293 8.293a1 1 0 011.414 0L10 9.586l1.293-1.293a1 1 0 111.414 1.414l-2 2a1 1 0 01-1.414 0l-2-2a1 1 0 010-1.414z"/></svg>') no-repeat right 16px center/20px 20px !important;
-        vertical-align: middle !important;
-        box-sizing: border-box !important;
-        margin-top: 8px !important;
-        display: block;
-      }
-      .form-section input[readonly] { background: transparent; }
-      .form-section .btn-row { margin-top: 30px; }
-      .form-section button[type="submit"] {
-        background: linear-gradient(90deg, #90caf9 0%, #1976d2 100%);
-        color: #111;
-        font-size: 1.3rem;
-        border: none;
-        border-radius: 12px;
-        padding: 15px 0;
-        width: 100%;
-        margin-top: 20px;
-        font-weight: 700;
-        box-shadow: 0 2px 8px #90caf944;
-        transition: background 0.18s, color 0.18s;
-      }
-      .form-section button[type="submit"]:hover, .form-section button[type="submit"]:focus {
-        background: #1976d2;
-        color: #fff;
-      }
-      .confirm-section { background: #fff; border-radius: 30px; padding: 60px 30px; margin: 60px 0; text-align: center; }
-      .confirm-section h2 { font-size: 2rem; margin-bottom: 30px; }
-      .confirm-section button {
-        background: linear-gradient(90deg, #90caf9 0%, #1976d2 100%);
-        color: #111;
-        font-size: 1.2rem;
-        border: none;
-        border-radius: 12px;
-        padding: 15px 30px;
-        margin-top: 20px;
-        font-weight: 700;
-        box-shadow: 0 2px 8px #90caf944;
-        transition: background 0.18s, color 0.18s;
-      }
-      .confirm-section button:hover, .confirm-section button:focus {
-        background: #1976d2;
-        color: #fff;
-      }
-      @media (max-width: 600px) {
-        main { max-width: 100vw; border-radius: 0; }
-        .job-info, .form-section, .confirm-section { padding: 15px; }
-        .btn-green, .btn-red { font-size: 1.2rem; padding: 15px 0; }
-        .qr-bounding-box, #qr-reader {
-          max-width: 98vw;
-          aspect-ratio: 4/3.2;
-        }
-      }
-      /* Center scan screen vertically and horizontally */
-      #scan-screen {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        min-height: 60vh;
-        margin: 0 auto;
-      }
-      button, .btn-main, .btn-green, .btn-red, .btn-back, .confirm-section button {
-        transition: background 0.2s, color 0.2s, box-shadow 0.2s;
-      }
-      button:hover, .btn-main:hover, .btn-green:hover, .btn-red:hover, .btn-back:hover, .confirm-section button:hover {
-        filter: brightness(1.1);
-        box-shadow: 0 2px 8px #90caf944;
-      }
-      /* Loader spinner for loading screen */
-      .loader-spinner {
-        margin: 0 auto;
-        margin-top: 12px;
-        border: 6px solid #e3eafc;
-        border-top: 6px solid #1976d2;
-        border-radius: 50%;
-        width: 64px;
-        height: 64px;
-        animation: spin 1s linear infinite;
-        box-shadow: 0 2px 12px #90caf944;
-        display: block;
-      }
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
-      .form-section label, .job-info, .job-info p, .form-section input[readonly] {
-        color: #111;
-      }
-      .job-info {
-        margin-top: 5px; /* reduce if needed */
-      }
-      .qr-bounding-box {
-        border: 10px inset #1976d2;
-        border-radius: 50px;
-        background: #e3eafc;
-        box-shadow: 0 2px 16px #90caf922;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto;
-        width: 100%;
-        max-width: 680px;
-        aspect-ratio: auto;
-        padding: 0px 0 30px 0;
-        height: auto;
-      }
-      #qr-reader {
-        width: 100%;
-        max-width: 600px;
-        aspect-ratio: auto;
-        margin: 0 auto;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: auto;
-        box-shadow: 0 0 0 0 transparent;
-      }
-      /* .top-bounding-box {
-        border: none;
-        border-radius: 24px;
-        background: #f4f6fb;
-        padding: 24px 5px 10px 5px;
-        margin: 5px auto 32px auto;
-        max-width: 480px;
+        margin: 0;
+        padding: 0;
+        border-radius: 0;
         box-shadow: none;
         display: flex;
         flex-direction: column;
+      }
+      .qr-bounding-box {
+        padding: 0 0 12px 0;
+        max-width: 100vw;
+        width: 100vw;
+        margin: 0;
+      }
+      #qr-reader {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        margin: 0;
+      }
+      .branding-icon {
+        margin-top: auto;
+        margin-bottom: 10px;
+      }
+      h1 {
+        margin-top: 8px;
+        margin-bottom: 30px;
+      }
+    }
+    @media (max-width: 600px) {
+      .qr-bounding-box {
+        max-width: 98vw;
+        aspect-ratio: auto;
+        padding-bottom: 15px;
+      }
+      #qr-reader {
+        max-width: 96vw;
+        aspect-ratio: auto;
+        margin: 0 auto;
+        display: flex;
         align-items: center;
-      } */
-      
-      /* Mobile vertical centering fix */
-      @media (max-width: 600px) {
-        html, body {
-          width: 100vw;
-          overflow-x: hidden;
-          margin: 0;
-          padding: 0;
-        }
-        main {
-          width: 100vw;
-          max-width: 100vw;
-          min-width: 0;
-          margin: 0;
-          padding: 0;
-          border-radius: 0;
-          box-shadow: none;
-          display: flex;
-          flex-direction: column;
-        }
-        .qr-bounding-box {
-          padding: 0 0 12px 0;
-          max-width: 100vw;
-          width: 100vw;
-          margin: 0;
-        }
-        #qr-reader {
-          width: 100%;
-          max-width: 100%;
-          min-width: 0;
-          margin: 0;
-        }
-        .branding-icon {
-          margin-top: auto;
-          margin-bottom: 10px;
-        }
-        h1 {
-          margin-top: 8px;
-          margin-bottom: 30px;
-        }
+        justify-content: center;
+        height: auto;
       }
-      @media (max-width: 600px) {
-        .qr-bounding-box {
-          max-width: 98vw;
-          aspect-ratio: auto;
-          padding-bottom: 15px;
-        }
-        #qr-reader {
-          max-width: 96vw;
-          aspect-ratio: auto;
-          margin: 0 auto;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          height: auto;
-        }
-      }
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-      }
+    }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
 
-    </style>
-  </head>
-  <body>
-  <main>
-    <!-- Scan Screen -->
-    <div id="scan-screen" style="display: flex; flex-direction: column; align-items: center; justify-content: flex-start; width: 100%;">
-      <div class="branding-icon" style="text-align:center;">
-        <img src="logo2024-Black.png" alt="Company Logo" style="height:56px; width:auto; display:block; margin-top: 20px;  margin-bottom: -20px;" />
+  </style>
+</head>
+<body>
+<main>
+  <!-- Scan Screen -->
+  <div id="scan-screen" style="display: flex; flex-direction: column; align-items: center; justify-content: flex-start; width: 100%;">
+    <div class="branding-icon" style="text-align:center;">
+      <img src="logo2024-Black.png" alt="Company Logo" style="height:56px; width:auto; display:block; margin-top: 20px;  margin-bottom: -20px;" />
+    </div>
+    <h1 style="text-align:center;">CNC JOB LOG</h1>
+    <div class="qr-bounding-box" style="display: flex; flex-direction: column; align-items: center; justify-content: flex-start;">
+      <div style="text-align:center; margin: 5px 0 12px 0; width: 100%;">
+        <span class="instruction-box"><span>แสกน QR Code ตรงนี้</span></span>
       </div>
-      <h1 style="text-align:center;">CNC JOB LOG</h1>
-      <div class="qr-bounding-box" style="display: flex; flex-direction: column; align-items: center; justify-content: flex-start;">
-        <div style="text-align:center; margin: 5px 0 12px 0; width: 100%;">
-          <span class="instruction-box"><span>แสกน QR Code ตรงนี้</span></span>
-        </div>
-        <div id="qr-reader" class="active"></div>
-      </div>
+      <div id="qr-reader" class="active"></div>
     </div>
+  </div>
 
-    <!-- Job Info Screen -->
-    <div id="info-screen" style="display:none;">
-      <button class="btn-back" style="margin-top:25px; margin-bottom:30px;" onclick="resetAll()">← กลับไปหน้าแสกน QR Code</button>
-      <h1>CNC JOB LOG</h1>
-      <div class="job-info" id="job-info"></div>
-      <div class="btn-row">
-        <button class="btn-green" onclick="showScreen('start-form')">เริ่มงานใหม่</button>
-        <button class="btn-red" onclick="fetchOpenJobsAndShowSelector()">งานเสร็จสิ้น</button>
-      </div>
+  <!-- Job Info Screen -->
+  <div id="info-screen" style="display:none;">
+    <button class="btn-back" style="margin-top:25px; margin-bottom:30px;" onclick="resetAll()">← กลับไปหน้าแสกน QR Code</button>
+    <h1>CNC JOB LOG</h1>
+    <div class="job-info" id="job-info"></div>
+    <div class="btn-row">
+      <button class="btn-green" onclick="showScreen('start-form')">เริ่มงานใหม่</button>
+      <button class="btn-red" onclick="fetchOpenJobsAndShowSelector()">งานเสร็จสิ้น</button>
     </div>
+  </div>
 
-    <!-- Start Form Screen -->
-    <form id="start-form" class="form-section" style="display:none;" onsubmit="submitStart(event)">
-      <button class="btn-back" type="button" onclick="showScreen('info-screen')">← กลับไปก่อนหน้า</button>
-      <h2>เริ่มงาน</h2>
-      <div id="start-job-info" class="job-info"></div>
-      <label>Process Name:</label>
-      <select name="processName" required>
-        <option value="">เลือก</option>
-        <option>CL</option><option>MC</option><option>GR</option><option>WC</option><option>ML</option>
-        <option>BL</option><option>CRP</option><option>MRP</option><option>NC</option><option>HN</option><option>QC</option><option>Rework</option><option> Machine Setting</option>
-      </select>
-      <label>Process No.:</label>
-      <input type="number" name="processNo" required min="1" max="20" inputmode="numeric">
-      <label>Step No.:</label>
-      <input type="number" name="stepNo" required min="1" max="20" inputmode="numeric">
-      <label>Machine No.:</label>
-      <input name="machineNo" required style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase()">
-      <label>รหัสพนักงาน:</label>
-      <input name="employeeCode" required inputmode="numeric">
-      <button type="submit">กดเพื่อส่ง</button>
-    </form>
+  <!-- Start Form Screen -->
+  <form id="start-form" class="form-section" style="display:none;" onsubmit="submitStart(event)">
+    <button class="btn-back" type="button" onclick="showScreen('info-screen')">← กลับไปก่อนหน้า</button>
+    <h2>เริ่มงาน</h2>
+    <div id="start-job-info" class="job-info"></div>
+    <label>Process Name:</label>
+    <select name="processName" required>
+      <option value="">เลือก</option>
+      <option>CL</option><option>MC</option><option>GR</option><option>WC</option><option>ML</option>
+      <option>BL</option><option>CRP</option><option>MRP</option><option>NC</option><option>HN</option><option>QC</option><option>Rework</option><option> Machine Setting</option>
+    </select>
+    <label>Process No.:</label>
+    <input type="number" name="processNo" required min="1" max="20" inputmode="numeric">
+    <label>Step No.:</label>
+    <input type="text" name="stepNo" required pattern="^[0-9]+(\+[0-9]+)*$" placeholder="เช่น: 1 หรือ 1+2+3" onblur="validateStepNo(this)">
+    <label>Machine No.:</label>
+    <input name="machineNo" required style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase()">
+    <label>รหัสพนักงาน:</label>
+    <input name="employeeCode" required style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase()">
+    <button type="submit">กดเพื่อส่ง</button>
+  </form>
 
-    <!-- Stop Form Screen -->
-    <form id="stop-form" class="form-section" style="display:none;" onsubmit="submitStop(event)">
-      <button class="btn-back" type="button" onclick="showScreen('info-screen')">← กลับไปก่อนหน้า</button>
-      <h2>งานเสร็จสิ้น</h2>
-      <div id="stop-job-info" class="job-info">  </div>
-      <label>Process Name:</label>
-      <select name="processName" required>
-        <option value="">เลือก</option>
-        <option>CL</option><option>MC</option><option>GR</option><option>WC</option><option>ML</option>
-        <option>BL</option><option>CRP</option><option>MRP</option><option>NC</option><option>HN</option><option>QC</option><option>Rework</option><option> Machine Setting</option>
-      </select>
-      <label>Process No.:</label>
-      <input type="number" name="processNo" required min="1" max="20" inputmode="numeric">
-      <label>Step No.:</label>
-      <input type="number" name="stepNo" required min="1" max="20" inputmode="numeric">
-      <label>รหัสพนักงาน:</label>
-      <input name="employeeCode" required inputmode="numeric">
-      <label>FG จำนวน:</label>
-      <input type="number" name="fg" required inputmode="numeric">
-      <label>NG จำนวน:</label>
-      <input type="number" name="ng" required inputmode="numeric">
-      <label>Rework จำนวน:</label>
-      <input type="number" name="rework" required inputmode="numeric">
-      <button type="submit">กดเพื่อส่ง</button>
-    </form>
+  <!-- Stop Form Screen -->
+  <form id="stop-form" class="form-section" style="display:none;" onsubmit="submitStop(event)">
+    <button class="btn-back" type="button" onclick="showScreen('info-screen')">← กลับไปก่อนหน้า</button>
+    <h2>งานเสร็จสิ้น</h2>
+    <div id="stop-job-info" class="job-info">  </div>
+    <label>Process Name:</label>
+    <select name="processName" required>
+      <option value="">เลือก</option>
+      <option>CL</option><option>MC</option><option>GR</option><option>WC</option><option>ML</option>
+      <option>BL</option><option>CRP</option><option>MRP</option><option>NC</option><option>HN</option><option>QC</option><option>Rework</option><option> Machine Setting</option>
+    </select>
+    <label>Process No.:</label>
+    <input type="number" name="processNo" required min="1" max="20" inputmode="numeric">
+    <label>Step No.:</label>
+    <input type="text" name="stepNo" required pattern="^[0-9]+(\+[0-9]+)*$" placeholder="เช่น: 1 หรือ 1+2+3" onblur="validateStepNo(this)">
+    <label>รหัสพนักงาน:</label>
+    <input name="employeeCode" required style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase()">
+    <label>FG จำนวน:</label>
+    <input type="number" name="fg" required inputmode="numeric">
+    <label>NG จำนวน:</label>
+    <input type="number" name="ng" required inputmode="numeric">
+    <label>Rework จำนวน:</label>
+    <input type="number" name="rework" required inputmode="numeric">
+    <button type="submit">กดเพื่อส่ง</button>
+  </form>
 
-    <!-- Confirmation Screen -->
-    <div id="confirm-screen" class="confirm-section" style="display:none;">
-      <h2>ข้อมูลถูกส่งเข้าสู่ระบบเรียบร้อยแล้ว</h2>
-      <button onclick="resetAll()">กลับไปหน้าแสกน QR Code</button>
-    </div>
-    <!-- Loading Screen -->
-    <div id="loading-screen" class="confirm-section" style="display:none;">
-      <div class="loader-spinner" aria-label="กำลังโหลด" role="status"></div>
-      <h2 style="margin-top:32px;">กำลังส่งข้อมูล...</h2>
-    </div>
-  </main>
+  <!-- Confirmation Screen -->
+  <div id="confirm-screen" class="confirm-section" style="display:none;">
+    <h2>ข้อมูลถูกส่งเข้าสู่ระบบเรียบร้อยแล้ว</h2>
+    <button onclick="resetAll()">กลับไปหน้าแสกน QR Code</button>
+  </div>
+  <!-- Loading Screen -->
+  <div id="loading-screen" class="confirm-section" style="display:none;">
+    <div class="loader-spinner" aria-label="กำลังโหลด" role="status"></div>
+    <h2 style="margin-top:32px;">กำลังส่งข้อมูล...</h2>
+  </div>
+</main>
 
-  <script>
-    // Global QR data object
-    let qrData = {};
-    let scanHandled = false;
-    let isSubmitting = false;
+<script>
+  // Global QR data object
+  let qrData = {};
+  let scanHandled = false;
+  let isSubmitting = false;
 
-    // Show only the selected screen
-    function showScreen(id) {
-      document.querySelectorAll('main > *').forEach(el => el.style.display = 'none');
-      document.getElementById(id).style.display = '';
-      if (id === 'scan-screen') {
-        scanHandled = false;
-        startScan();
-        document.getElementById('start-job-info').innerHTML = '';
-        document.getElementById('stop-job-info').innerHTML = '';
-        document.getElementById('job-info').innerHTML = '';
-      } else {
-        if (window.qrScanner) {
-          window.qrScanner.stop().catch(()=>{});
-          window.qrScanner = null;
-        }
-        const qrReader = document.getElementById('qr-reader');
-        qrReader.classList.remove('active');
-        if (qrReader.querySelector('.scan-line')) qrReader.querySelector('.scan-line').remove();
-      }
-      if (id === 'start-form') fillJobInfo('start-job-info');
-      if (id === 'stop-form') fillJobInfo('stop-job-info');
-    }
-
-    // Fill job info fields
-    function fillJobInfo(containerId) {
-      const el = document.getElementById(containerId);
-      el.innerHTML = `
-        <p><strong>Project Number:</strong> <input readonly value="${qrData.projectNo||''}"></p>
-        <p><strong>Customer Name:</strong> <input readonly value="${qrData.customerName||''}"></p>
-        <p><strong>Part Name:</strong> <input readonly value="${qrData.partName||''}"></p>
-        <p><strong>Drawing Number:</strong> <input readonly value="${qrData.drawingNo||''}"></p>
-        <p><strong>Quantity Ordered:</strong> <input readonly value="${qrData.quantityOrdered||''}"></p>
-      `;
-    }
-
-    // Fill job info for info screen
-    function fillInfoScreen() {
-      document.getElementById('job-info').innerHTML = `
-        <p><strong>Project Number:</strong> ${qrData.projectNo||''}</p>
-        <p><strong>Customer Name:</strong> ${qrData.customerName||''}</p>
-        <p><strong>Part Name:</strong> ${qrData.partName||''}</p>
-        <p><strong>Drawing Number:</strong> ${qrData.drawingNo||''}</p>
-        <p><strong>Quantity Ordered:</strong> ${qrData.quantityOrdered||''}</p>
-      `;
-    }
-
-    // Reset all to scan screen
-    function resetAll() {
-      qrData = {};
-      // Reset the forms
-      document.getElementById('start-form').reset();
-      document.getElementById('stop-form').reset();
-      showScreen('scan-screen');
-      // Do NOT hide qr-reader here
-      if (window.qrScanner) {
-        window.qrScanner.stop().catch(()=>{});
-        window.qrScanner = null;
-      }
-    }
-
-    // Start QR scan
-    function startScan() {
-      scanHandled = false;
-      const qrReader = document.getElementById('qr-reader');
-      qrReader.style.display = '';
-      // Reset border to default (no border)
-      qrReader.style.border = '';
-      qrReader.classList.add('active');
-      // Add animated scan line if not present
-      if (!qrReader.querySelector('.scan-line')) {
-        const scanLine = document.createElement('div');
-        scanLine.className = 'scan-line';
-        qrReader.appendChild(scanLine);
-      }
-      // Stop any previous scanner instance
-      if (window.qrScanner) {
-        window.qrScanner.stop().catch(()=>{});
-        window.qrScanner = null;
-      }
-      // Create a new scanner instance
-      window.qrScanner = new Html5Qrcode("qr-reader");
-      Html5Qrcode.getCameras().then(devices => {
-        if (devices && devices.length) {
-          window.qrScanner.start(
-            { facingMode: "environment" },
-            { fps: 10, qrbox: { width: 320, height: 320 } },
-            qr => {
-              if (scanHandled) return;
-              try {
-                qrData = JSON.parse(qr);
-                // Set border to green to indicate success
-                qrReader.style.border = '4px solid #0f0';
-                scanHandled = true;
-                setTimeout(() => {
-                  fillInfoScreen();
-                  showScreen('info-screen');
-                }, 150); // short delay to show green border
-                window.qrScanner.stop();
-                window.qrScanner = null;
-              } catch {
-                // On error, do NOT set scanHandled, do NOT stop/nullify scanner
-                qrReader.style.border = '4px solid #e00'; // red border for error
-                setTimeout(() => {
-                  qrReader.style.border = '';
-                }, 500);
-                alert("QR format ผิดพลาด กรุณาลองใหม่");
-              }
-            }
-          ).catch(err => {
-            alert("ไม่สามารถเริ่มกล้องได้: " + err);
-          });
-        } else {
-          alert("ไม่พบกล้อง");
-        }
-      }).catch(err => {
-        alert("ไม่สามารถเข้าถึงกล้องได้: " + err);
-      });
-    }
-
-  // Submit Start Form via fetch()
-  function submitStart(e) {
-    e.preventDefault();
-    if (isSubmitting) return;
-    isSubmitting = true;
-    const submitBtn = document.querySelector('#start-form button[type="submit"]');
-    if (submitBtn) submitBtn.disabled = true;
-    showScreen('loading-screen');
-    const form = Object.fromEntries(new FormData(e.target).entries());
-    const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbwfRkqJVAw52gPTwICDT3BUYY7miyUHrxSiNlmgpaGlQEy3LLG_NhIjKaikMSsZXl-Erw/exec";
-    fetch(GAS_ENDPOINT, {
-      method: "POST",
-      mode: "cors",
-      headers: {
-        "Content-Type": "text/plain"
-      },
-      body: JSON.stringify({ ...qrData, ...form, status: 'OPEN' })
-    })
-    .then(response => response.text())
-    .then(text => {
-      console.log('Backend response:', text); // Debug log
-      isSubmitting = false;
-      if (submitBtn) submitBtn.disabled = false;
-      if (text.trim().startsWith("ERROR:")) {
-        alert(text.trim().replace("ERROR: ", ""));
-        showScreen('start-form');
-      } else {
-        showScreen('confirm-screen');
-      }
-    })
-    .catch((error) => {
-      isSubmitting = false;
-      if (submitBtn) submitBtn.disabled = false;
-      alert("เกิดข้อผิดพลาดในการส่งข้อมูล: " + error.message);
-      showScreen('start-form');
-    });
-  }
-
-  function submitStop(e) {
-    e.preventDefault();
-    if (isSubmitting) return;
-    isSubmitting = true;
-    const submitBtn = document.querySelector('#stop-form button[type="submit"]');
-    if (submitBtn) submitBtn.disabled = true;
-    showScreen('loading-screen');
-    const form = Object.fromEntries(new FormData(e.target).entries());
-    const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbwfRkqJVAw52gPTwICDT3BUYY7miyUHrxSiNlmgpaGlQEy3LLG_NhIjKaikMSsZXl-Erw/exec";
-    fetch(GAS_ENDPOINT, {
-      method: "POST",
-      mode: "cors",
-      headers: {
-        "Content-Type": "text/plain"
-      },
-      body: JSON.stringify({ ...qrData, ...form, status: 'CLOSE' })
-    })
-    .then(response => response.text())
-    .then(text => {
-      console.log('Backend response:', text); // Debug log
-      isSubmitting = false;
-      if (submitBtn) submitBtn.disabled = false;
-      if (text.trim().startsWith("ERROR:")) {
-        alert(text.trim().replace("ERROR: ", ""));
-        showScreen('stop-form');
-      } else {
-        showScreen('confirm-screen');
-      }
-    })
-    .catch((error) => {
-      isSubmitting = false;
-      if (submitBtn) submitBtn.disabled = false;
-      alert("เกิดข้อผิดพลาดในการส่งข้อมูล: " + error.message);
-      showScreen('stop-form');
-    });
-  }
-
-  function fetchOpenJobsAndShowSelector() {
-    showOpenJobsLoading();
-    const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbwfRkqJVAw52gPTwICDT3BUYY7miyUHrxSiNlmgpaGlQEy3LLG_NhIjKaikMSsZXl-Erw/exec";
-    const params = new URLSearchParams({
-      mode: 'openJobs',
-      projectNo: qrData.projectNo,
-      partName: qrData.partName
-    });
-    fetch(`${GAS_ENDPOINT}?${params.toString()}`)
-      .then(res => res.json())
-      .then(openJobs => {
-        hideOpenJobsLoading();
-        showOpenJobsTableSelector(openJobs);
-      })
-      .catch(() => {
-        hideOpenJobsLoading();
-        alert('เกิดข้อผิดพลาดในการโหลดข้อมูล');
-      });
-  }
-
-  function showOpenJobsLoading() {
-    closeOpenJobsSelector(); // Remove any previous modal/overlay
-    let overlay = document.createElement('div');
-    overlay.id = 'open-jobs-overlay';
-    overlay.style = 'position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.35); z-index:999;';
-    document.body.appendChild(overlay);
-    let loader = document.createElement('div');
-    loader.id = 'open-jobs-loading';
-    loader.style = 'position:fixed; left:0; right:0; top:40vh; margin:0 auto; z-index:1000; display:flex; flex-direction:column; align-items:center;';
-    loader.innerHTML = `<div class="loader-spinner" style="width:56px; height:56px; border-width:7px;"></div><div style="margin-top:18px; color:#fff; font-size:1.2rem;">กำลังโหลดข้อมูล...</div>`;
-    document.body.appendChild(loader);
-  }
-
-  function hideOpenJobsLoading() {
-    let loader = document.getElementById('open-jobs-loading');
-    if (loader) loader.remove();
-    let overlay = document.getElementById('open-jobs-overlay');
-    if (overlay) overlay.remove();
-  }
-
-  function showOpenJobsTableSelector(openJobs) {
-    // Sort by processName, then processNo (numeric), then stepNo (numeric)
-    openJobs.sort((a, b) => {
-      if (a.processName < b.processName) return -1;
-      if (a.processName > b.processName) return 1;
-      const aProcNo = parseInt(a.processNo, 10);
-      const bProcNo = parseInt(b.processNo, 10);
-      if (aProcNo !== bProcNo) return aProcNo - bProcNo;
-      const aStepNo = parseInt(a.stepNo, 10);
-      const bStepNo = parseInt(b.stepNo, 10);
-      return aStepNo - bStepNo;
-    });
-    // Remove any existing selector or overlay
-    let selectorDiv = document.getElementById('open-jobs-selector');
-    if (selectorDiv) selectorDiv.remove();
-    let overlay = document.getElementById('open-jobs-overlay');
-    if (overlay) overlay.remove();
-
-    // Add semi-transparent overlay
-    overlay = document.createElement('div');
-    overlay.id = 'open-jobs-overlay';
-    overlay.style = 'position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.35); z-index:999;';
-    overlay.onclick = closeOpenJobsSelector;
-    document.body.appendChild(overlay);
-
-    selectorDiv = document.createElement('div');
-    selectorDiv.id = 'open-jobs-selector';
-    selectorDiv.style = 'background: #fff; border-radius: 18px; padding: 24px; box-shadow: 0 2px 24px #0005; max-width: 500px; margin: 30px auto; position: fixed; left: 0; right: 0; top: 10vh; z-index: 1000;';
-
-    let html = `<h2 style="text-align:center;">เลือกงานที่ต้องการจะปิด</h2>`;
-    if (openJobs.length === 0) {
-      html += `<div style="text-align:center; padding: 32px 0;">
-        <div style="font-size:1.3rem; color:#b71c1c; margin-bottom:24px;">ไม่พบข้อมูลการเริ่มของงานนี้</div>
-        <button onclick="closeOpenJobsSelector(); showScreen('info-screen');" style="padding:10px 32px; border-radius:10px; background:#1976d2; color:#fff; border:none; font-size:1.1rem; cursor:pointer;">กลับ</button>
-      </div>`;
+  // Validate Step No. input to allow numbers and plus signs
+  function validateStepNo(input) {
+    let value = input.value;
+    
+    // Remove any characters that aren't numbers or plus signs
+    value = value.replace(/[^0-9+]/g, '');
+    
+    // Ensure it doesn't start or end with a plus sign
+    value = value.replace(/^\+/, '').replace(/\+$/, '');
+    
+    // Ensure no consecutive plus signs
+    value = value.replace(/\+\+/g, '+');
+    
+    // Update the input value
+    input.value = value;
+    
+    // Validate the pattern
+    const pattern = /^[0-9]+(\+[0-9]+)*$/;
+    if (value && !pattern.test(value)) {
+      input.setCustomValidity('กรุณาใส่ตัวเลขและเครื่องหมาย + เท่านั้น เช่น 1 หรือ 1+2+3');
     } else {
-      html += `<table style="width:100%; border-collapse:collapse; margin: 0 auto;">
-        <thead>
-          <tr>
-            <th>Process Name</th>
-            <th>Process No.</th>
-            <th>Step No.</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>`;
-      openJobs.forEach((job, idx) => {
-        html += `<tr>
-          <td style="text-align:center;">${job.processName}</td>
-          <td style="text-align:center;">${job.processNo}</td>
-          <td style="text-align:center;">${job.stepNo}</td>
-          <td><button onclick="selectOpenJob(${idx})" style="padding:6px 18px; border-radius:8px; background:#1976d2; color:#fff; border:none; cursor:pointer;">เลือก</button></td>
-        </tr>`;
-      });
-      html += `</tbody></table>`;
-      html += `<div style="text-align:center; margin-top:18px;"><button onclick="closeOpenJobsSelector()" style="padding:8px 24px; border-radius:8px; background:#aaa; color:#fff; border:none; cursor:pointer;">ยกเลิก</button></div>`;
+      input.setCustomValidity('');
     }
-    selectorDiv.innerHTML = html;
-    document.body.appendChild(selectorDiv);
-
-    // Store jobs globally for selection
-    window._openJobs = openJobs;
   }
 
-  function selectOpenJob(idx) {
-    const job = window._openJobs[idx];
-    // Prefill STOP form fields
-    document.querySelector('#stop-form [name="processName"]').value = job.processName;
-    document.querySelector('#stop-form [name="processNo"]').value = job.processNo;
-    document.querySelector('#stop-form [name="stepNo"]').value = job.stepNo;
-    closeOpenJobsSelector();
-    showScreen('stop-form');
+  // Show only the selected screen
+  function showScreen(id) {
+    document.querySelectorAll('main > *').forEach(el => el.style.display = 'none');
+    document.getElementById(id).style.display = '';
+    if (id === 'scan-screen') {
+      scanHandled = false;
+      startScan();
+      document.getElementById('start-job-info').innerHTML = '';
+      document.getElementById('stop-job-info').innerHTML = '';
+      document.getElementById('job-info').innerHTML = '';
+    } else {
+      if (window.qrScanner) {
+        window.qrScanner.stop().catch(()=>{});
+        window.qrScanner = null;
+      }
+      const qrReader = document.getElementById('qr-reader');
+      qrReader.classList.remove('active');
+      if (qrReader.querySelector('.scan-line')) qrReader.querySelector('.scan-line').remove();
+    }
+    if (id === 'start-form') fillJobInfo('start-job-info');
+    if (id === 'stop-form') fillJobInfo('stop-job-info');
   }
 
-  function closeOpenJobsSelector() {
-    let selectorDiv = document.getElementById('open-jobs-selector');
-    if (selectorDiv) selectorDiv.remove();
-    let overlay = document.getElementById('open-jobs-overlay');
-    if (overlay) overlay.remove();
-    let loader = document.getElementById('open-jobs-loading');
-    if (loader) loader.remove();
+  // Fill job info fields
+  function fillJobInfo(containerId) {
+    const el = document.getElementById(containerId);
+    el.innerHTML = `
+      <p><strong>Project Number:</strong> <input readonly value="${qrData.projectNo||''}"></p>
+      <p><strong>Customer Name:</strong> <input readonly value="${qrData.customerName||''}"></p>
+      <p><strong>Part Name:</strong> <input readonly value="${qrData.partName||''}"></p>
+      <p><strong>Drawing Number:</strong> <input readonly value="${qrData.drawingNo||''}"></p>
+      <p><strong>Quantity Ordered:</strong> <input readonly value="${qrData.quantityOrdered||''}"></p>
+    `;
   }
 
-    // On load, show scan screen
+  // Fill job info for info screen
+  function fillInfoScreen() {
+    document.getElementById('job-info').innerHTML = `
+      <p><strong>Project Number:</strong> ${qrData.projectNo||''}</p>
+      <p><strong>Customer Name:</strong> ${qrData.customerName||''}</p>
+      <p><strong>Part Name:</strong> ${qrData.partName||''}</p>
+      <p><strong>Drawing Number:</strong> ${qrData.drawingNo||''}</p>
+      <p><strong>Quantity Ordered:</strong> ${qrData.quantityOrdered||''}</p>
+    `;
+  }
+
+  // Reset all to scan screen
+  function resetAll() {
+    qrData = {};
+    // Reset the forms
+    document.getElementById('start-form').reset();
+    document.getElementById('stop-form').reset();
     showScreen('scan-screen');
-  </script>
-  </body>
-  </html>  <!DOCTYPE html>
+    // Do NOT hide qr-reader here
+    if (window.qrScanner) {
+      window.qrScanner.stop().catch(()=>{});
+      window.qrScanner = null;
+    }
+  }
+
+  // Start QR scan
+  function startScan() {
+    scanHandled = false;
+    const qrReader = document.getElementById('qr-reader');
+    qrReader.style.display = '';
+    // Reset border to default (no border)
+    qrReader.style.border = '';
+    qrReader.classList.add('active');
+    // Add animated scan line if not present
+    if (!qrReader.querySelector('.scan-line')) {
+      const scanLine = document.createElement('div');
+      scanLine.className = 'scan-line';
+      qrReader.appendChild(scanLine);
+    }
+    // Stop any previous scanner instance
+    if (window.qrScanner) {
+      window.qrScanner.stop().catch(()=>{});
+      window.qrScanner = null;
+    }
+    // Create a new scanner instance
+    window.qrScanner = new Html5Qrcode("qr-reader");
+    Html5Qrcode.getCameras().then(devices => {
+      if (devices && devices.length) {
+        window.qrScanner.start(
+          { facingMode: "environment" },
+          { fps: 10, qrbox: { width: 320, height: 320 } },
+          qr => {
+            if (scanHandled) return;
+            try {
+              qrData = JSON.parse(qr);
+              // Set border to green to indicate success
+              qrReader.style.border = '4px solid #0f0';
+              scanHandled = true;
+              setTimeout(() => {
+                fillInfoScreen();
+                showScreen('info-screen');
+              }, 150); // short delay to show green border
+              window.qrScanner.stop();
+              window.qrScanner = null;
+            } catch {
+              // On error, do NOT set scanHandled, do NOT stop/nullify scanner
+              qrReader.style.border = '4px solid #e00'; // red border for error
+              setTimeout(() => {
+                qrReader.style.border = '';
+              }, 500);
+              alert("QR format ผิดพลาด กรุณาลองใหม่");
+            }
+          }
+        ).catch(err => {
+          alert("ไม่สามารถเริ่มกล้องได้: " + err);
+        });
+      } else {
+        alert("ไม่พบกล้อง");
+      }
+    }).catch(err => {
+      alert("ไม่สามารถเข้าถึงกล้องได้: " + err);
+    });
+  }
+
+// Submit Start Form via fetch()
+function submitStart(e) {
+  e.preventDefault();
+  if (isSubmitting) return;
+  isSubmitting = true;
+  const submitBtn = document.querySelector('#start-form button[type="submit"]');
+  if (submitBtn) submitBtn.disabled = true;
+  showScreen('loading-screen');
+  const form = Object.fromEntries(new FormData(e.target).entries());
+  const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbwfRkqJVAw52gPTwICDT3BUYY7miyUHrxSiNlmgpaGlQEy3LLG_NhIjKaikMSsZXl-Erw/exec";
+  fetch(GAS_ENDPOINT, {
+    method: "POST",
+    mode: "cors",
+    headers: {
+      "Content-Type": "text/plain"
+    },
+    body: JSON.stringify({ ...qrData, ...form, status: 'OPEN' })
+  })
+  .then(response => response.text())
+  .then(text => {
+    console.log('Backend response:', text); // Debug log
+    isSubmitting = false;
+    if (submitBtn) submitBtn.disabled = false;
+    if (text.trim().startsWith("ERROR:")) {
+      alert(text.trim().replace("ERROR: ", ""));
+      showScreen('start-form');
+    } else {
+      showScreen('confirm-screen');
+    }
+  })
+  .catch((error) => {
+    isSubmitting = false;
+    if (submitBtn) submitBtn.disabled = false;
+    alert("เกิดข้อผิดพลาดในการส่งข้อมูล: " + error.message);
+    showScreen('start-form');
+  });
+}
+
+function submitStop(e) {
+  e.preventDefault();
+  if (isSubmitting) return;
+  isSubmitting = true;
+  const submitBtn = document.querySelector('#stop-form button[type="submit"]');
+  if (submitBtn) submitBtn.disabled = true;
+  showScreen('loading-screen');
+  const form = Object.fromEntries(new FormData(e.target).entries());
+  const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbwfRkqJVAw52gPTwICDT3BUYY7miyUHrxSiNlmgpaGlQEy3LLG_NhIjKaikMSsZXl-Erw/exec";
+  fetch(GAS_ENDPOINT, {
+    method: "POST",
+    mode: "cors",
+    headers: {
+      "Content-Type": "text/plain"
+    },
+    body: JSON.stringify({ ...qrData, ...form, status: 'CLOSE' })
+  })
+  .then(response => response.text())
+  .then(text => {
+    console.log('Backend response:', text); // Debug log
+    isSubmitting = false;
+    if (submitBtn) submitBtn.disabled = false;
+    if (text.trim().startsWith("ERROR:")) {
+      alert(text.trim().replace("ERROR: ", ""));
+      showScreen('stop-form');
+    } else {
+      showScreen('confirm-screen');
+    }
+  })
+  .catch((error) => {
+    isSubmitting = false;
+    if (submitBtn) submitBtn.disabled = false;
+    alert("เกิดข้อผิดพลาดในการส่งข้อมูล: " + error.message);
+    showScreen('stop-form');
+  });
+}
+
+function fetchOpenJobsAndShowSelector() {
+  showOpenJobsLoading();
+  const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbwfRkqJVAw52gPTwICDT3BUYY7miyUHrxSiNlmgpaGlQEy3LLG_NhIjKaikMSsZXl-Erw/exec";
+  const params = new URLSearchParams({
+    mode: 'openJobs',
+    projectNo: qrData.projectNo,
+    partName: qrData.partName
+  });
+  fetch(`${GAS_ENDPOINT}?${params.toString()}`)
+    .then(res => res.json())
+    .then(openJobs => {
+      hideOpenJobsLoading();
+      showOpenJobsTableSelector(openJobs);
+    })
+    .catch(() => {
+      hideOpenJobsLoading();
+      alert('เกิดข้อผิดพลาดในการโหลดข้อมูล');
+    });
+}
+
+function showOpenJobsLoading() {
+  closeOpenJobsSelector(); // Remove any previous modal/overlay
+  let overlay = document.createElement('div');
+  overlay.id = 'open-jobs-overlay';
+  overlay.style = 'position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.35); z-index:999;';
+  document.body.appendChild(overlay);
+  let loader = document.createElement('div');
+  loader.id = 'open-jobs-loading';
+  loader.style = 'position:fixed; left:0; right:0; top:40vh; margin:0 auto; z-index:1000; display:flex; flex-direction:column; align-items:center;';
+  loader.innerHTML = `<div class="loader-spinner" style="width:56px; height:56px; border-width:7px;"></div><div style="margin-top:18px; color:#fff; font-size:1.2rem;">กำลังโหลดข้อมูล...</div>`;
+  document.body.appendChild(loader);
+}
+
+function hideOpenJobsLoading() {
+  let loader = document.getElementById('open-jobs-loading');
+  if (loader) loader.remove();
+  let overlay = document.getElementById('open-jobs-overlay');
+  if (overlay) overlay.remove();
+}
+
+function showOpenJobsTableSelector(openJobs) {
+  // Sort by processName, then processNo (numeric), then stepNo (numeric)
+  openJobs.sort((a, b) => {
+    if (a.processName < b.processName) return -1;
+    if (a.processName > b.processName) return 1;
+    const aProcNo = parseInt(a.processNo, 10);
+    const bProcNo = parseInt(b.processNo, 10);
+    if (aProcNo !== bProcNo) return aProcNo - bProcNo;
+    const aStepNo = parseInt(a.stepNo, 10);
+    const bStepNo = parseInt(b.stepNo, 10);
+    return aStepNo - bStepNo;
+  });
+  // Remove any existing selector or overlay
+  let selectorDiv = document.getElementById('open-jobs-selector');
+  if (selectorDiv) selectorDiv.remove();
+  let overlay = document.getElementById('open-jobs-overlay');
+  if (overlay) overlay.remove();
+
+  // Add semi-transparent overlay
+  overlay = document.createElement('div');
+  overlay.id = 'open-jobs-overlay';
+  overlay.style = 'position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.35); z-index:999;';
+  overlay.onclick = closeOpenJobsSelector;
+  document.body.appendChild(overlay);
+
+  selectorDiv = document.createElement('div');
+  selectorDiv.id = 'open-jobs-selector';
+  selectorDiv.style = 'background: #fff; border-radius: 18px; padding: 24px; box-shadow: 0 2px 24px #0005; max-width: 500px; margin: 30px auto; position: fixed; left: 0; right: 0; top: 10vh; z-index: 1000;';
+
+  let html = `<h2 style="text-align:center;">เลือกงานที่ต้องการจะปิด</h2>`;
+  if (openJobs.length === 0) {
+    html += `<div style="text-align:center; padding: 32px 0;">
+      <div style="font-size:1.3rem; color:#b71c1c; margin-bottom:24px;">ไม่พบข้อมูลการเริ่มของงานนี้</div>
+      <button onclick="closeOpenJobsSelector(); showScreen('info-screen');" style="padding:10px 32px; border-radius:10px; background:#1976d2; color:#fff; border:none; font-size:1.1rem; cursor:pointer;">กลับ</button>
+    </div>`;
+  } else {
+    html += `<table style="width:100%; border-collapse:collapse; margin: 0 auto;">
+      <thead>
+        <tr>
+          <th>Process Name</th>
+          <th>Process No.</th>
+          <th>Step No.</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>`;
+    openJobs.forEach((job, idx) => {
+      html += `<tr>
+        <td style="text-align:center;">${job.processName}</td>
+        <td style="text-align:center;">${job.processNo}</td>
+        <td style="text-align:center;">${job.stepNo}</td>
+        <td><button onclick="selectOpenJob(${idx})" style="padding:6px 18px; border-radius:8px; background:#1976d2; color:#fff; border:none; cursor:pointer;">เลือก</button></td>
+      </tr>`;
+    });
+    html += `</tbody></table>`;
+    html += `<div style="text-align:center; margin-top:18px;"><button onclick="closeOpenJobsSelector()" style="padding:8px 24px; border-radius:8px; background:#aaa; color:#fff; border:none; cursor:pointer;">ยกเลิก</button></div>`;
+  }
+  selectorDiv.innerHTML = html;
+  document.body.appendChild(selectorDiv);
+
+  // Store jobs globally for selection
+  window._openJobs = openJobs;
+}
+
+function selectOpenJob(idx) {
+  const job = window._openJobs[idx];
+  // Prefill STOP form fields
+  document.querySelector('#stop-form [name="processName"]').value = job.processName;
+  document.querySelector('#stop-form [name="processNo"]').value = job.processNo;
+  document.querySelector('#stop-form [name="stepNo"]').value = job.stepNo;
+  closeOpenJobsSelector();
+  showScreen('stop-form');
+}
+
+function closeOpenJobsSelector() {
+  let selectorDiv = document.getElementById('open-jobs-selector');
+  if (selectorDiv) selectorDiv.remove();
+  let overlay = document.getElementById('open-jobs-overlay');
+  if (overlay) overlay.remove();
+  let loader = document.getElementById('open-jobs-loading');
+  if (loader) loader.remove();
+}
+
+  // On load, show scan screen
+  showScreen('scan-screen');
+</script>
+</body>
+</html>  <!DOCTYPE html>
