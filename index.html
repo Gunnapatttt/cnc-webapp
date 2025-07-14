@@ -505,6 +505,8 @@
     <input type="number" name="processNo" required min="1" max="20" inputmode="numeric">
     <label>Step No.:</label>
     <input type="text" name="stepNo" required pattern="^[0-9]+(\+[0-9]+)*$" placeholder="เช่น: 1 หรือ 1+2+3" onblur="validateStepNo(this)">
+    <label>Machine No.:</label>
+    <input name="machineNo" required style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase()">
     <label>รหัสพนักงาน:</label>
     <input name="employeeCode" required style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase()">
     <label>FG จำนวน:</label>
