@@ -1,3 +1,5 @@
+Front End:
+
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -499,7 +501,7 @@
     <select name="processName" required>
       <option value="">เลือก</option>
       <option>CL</option><option>MC</option><option>GR</option><option>WC</option><option>ML</option>
-      <option>BL</option><option>CRP</option><option>MRP</option><option>NC</option><option>QC</option><option>Rework</option><option value="Machine Setting">Machine Setting</option>
+      <option>BL</option><option>CRP</option><option>MRP</option><option>NC</option><option>QC</option><option>Rework</option><option> Machine Setting</option>
     </select>
     <label>Process No.:</label>
     <input type="number" name="processNo" required min="1" max="20" inputmode="numeric">
@@ -509,18 +511,12 @@
     <input name="machineNo" required style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase()">
     <label>รหัสพนักงาน:</label>
     <input name="employeeCode" required style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase()">
-    <div class="stop-extra-field" id="fg-row">
-      <label>FG จำนวน:</label>
-      <input type="number" name="fg" required inputmode="numeric">
-    </div>
-    <div class="stop-extra-field" id="ng-row">
-      <label>NG จำนวน:</label>
-      <input type="number" name="ng" required inputmode="numeric">
-    </div>
-    <div class="stop-extra-field" id="rework-row">
-      <label>Rework จำนวน:</label>
-      <input type="number" name="rework" required inputmode="numeric">
-    </div>
+    <label>FG จำนวน:</label>
+    <input type="number" name="fg" required inputmode="numeric">
+    <label>NG จำนวน:</label>
+    <input type="number" name="ng" required inputmode="numeric">
+    <label>Rework จำนวน:</label>
+    <input type="number" name="rework" required inputmode="numeric">
     <button type="submit">กดเพื่อส่ง</button>
   </form>
 
@@ -587,10 +583,7 @@
       if (qrReader.querySelector('.scan-line')) qrReader.querySelector('.scan-line').remove();
     }
     if (id === 'start-form') fillJobInfo('start-job-info');
-    if (id === 'stop-form') {
-      fillJobInfo('stop-job-info');
-      updateStopFormFields();
-    }
+    if (id === 'stop-form') fillJobInfo('stop-job-info');
   }
 
   // Fill job info fields
@@ -698,7 +691,7 @@ function submitStart(e) {
   if (submitBtn) submitBtn.disabled = true;
   showScreen('loading-screen');
   const form = Object.fromEntries(new FormData(e.target).entries());
-  const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbxXSOXtJ-CFInFI4BYqT-E4_o-TbsxMTfgDMi0h7Lwl3ensDNZQgzk8-pR-M7PuyTgt/exec";
+  const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbzJQYUFo_oMQzdYC0fXFdm3nrUDoEGE0GAjvcvMxwMqRiO_APDn1C2r3Q5m3zSgxNL-sw/exec";
   fetch(GAS_ENDPOINT, {
     method: "POST",
     mode: "cors",
@@ -735,7 +728,7 @@ function submitStop(e) {
   if (submitBtn) submitBtn.disabled = true;
   showScreen('loading-screen');
   const form = Object.fromEntries(new FormData(e.target).entries());
-  const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbxXSOXtJ-CFInFI4BYqT-E4_o-TbsxMTfgDMi0h7Lwl3ensDNZQgzk8-pR-M7PuyTgt/exec";
+  const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbzJQYUFo_oMQzdYC0fXFdm3nrUDoEGE0GAjvcvMxwMqRiO_APDn1C2r3Q5m3zSgxNL-sw/exec";
   fetch(GAS_ENDPOINT, {
     method: "POST",
     mode: "cors",
@@ -766,7 +759,7 @@ function submitStop(e) {
 
 function fetchOpenJobsAndShowSelector() {
   showOpenJobsLoading();
-  const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbxXSOXtJ-CFInFI4BYqT-E4_o-TbsxMTfgDMi0h7Lwl3ensDNZQgzk8-pR-M7PuyTgt/exec";
+  const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbzJQYUFo_oMQzdYC0fXFdm3nrUDoEGE0GAjvcvMxwMqRiO_APDn1C2r3Q5m3zSgxNL-sw/exec";
   const params = new URLSearchParams({
     mode: 'openJobs',
     projectNo: qrData.projectNo,
@@ -891,42 +884,6 @@ function closeOpenJobsSelector() {
   let loader = document.getElementById('open-jobs-loading');
   if (loader) loader.remove();
 }
-
-function updateStopFormFields() {
-  const stopForm = document.getElementById('stop-form');
-  if (!stopForm) return;
-  const processNameSelect = stopForm.querySelector('[name="processName"]');
-  const fgInput = stopForm.querySelector('[name="fg"]');
-  const ngInput = stopForm.querySelector('[name="ng"]');
-  const reworkInput = stopForm.querySelector('[name="rework"]');
-  const fgRow = document.getElementById('fg-row');
-  const ngRow = document.getElementById('ng-row');
-  const reworkRow = document.getElementById('rework-row');
-  if (!processNameSelect || !fgInput || !ngInput || !reworkInput || !fgRow || !ngRow || !reworkRow) return;
-  function updateFields() {
-    const selected = processNameSelect.value.replace(/\s+/g, ' ').trim().toLowerCase();
-    if (selected === 'machine setting') {
-      fgInput.required = false;
-      ngInput.required = false;
-      reworkInput.required = false;
-      fgRow.style.display = 'none';
-      ngRow.style.display = 'none';
-      reworkRow.style.display = 'none';
-    } else {
-      fgInput.required = true;
-      ngInput.required = true;
-      reworkInput.required = true;
-      fgRow.style.display = '';
-      ngRow.style.display = '';
-      reworkRow.style.display = '';
-    }
-  }
-  processNameSelect.removeEventListener('change', updateFields);
-  processNameSelect.addEventListener('change', updateFields);
-  updateFields();
-}
-
-document.addEventListener('DOMContentLoaded', updateStopFormFields);
 
   // On load, show scan screen
   showScreen('scan-screen');
