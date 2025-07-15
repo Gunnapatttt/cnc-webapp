@@ -499,7 +499,7 @@
     <select name="processName" required>
       <option value="">เลือก</option>
       <option>CL</option><option>MC</option><option>GR</option><option>WC</option><option>ML</option>
-      <option>BL</option><option>CRP</option><option>MRP</option><option>NC</option><option>QC</option><option>Rework</option><option> Machine Setting</option>
+      <option>BL</option><option>CRP</option><option>MRP</option><option>NC</option><option>QC</option><option>Rework</option><option value="Machine Setting">Machine Setting</option>
     </select>
     <label>Process No.:</label>
     <input type="number" name="processNo" required min="1" max="20" inputmode="numeric">
@@ -509,12 +509,18 @@
     <input name="machineNo" required style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase()">
     <label>รหัสพนักงาน:</label>
     <input name="employeeCode" required style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase()">
-    <label>FG จำนวน:</label>
-    <input type="number" name="fg" required inputmode="numeric">
-    <label>NG จำนวน:</label>
-    <input type="number" name="ng" required inputmode="numeric">
-    <label>Rework จำนวน:</label>
-    <input type="number" name="rework" required inputmode="numeric">
+    <div class="stop-extra-field" id="fg-row">
+      <label>FG จำนวน:</label>
+      <input type="number" name="fg" required inputmode="numeric">
+    </div>
+    <div class="stop-extra-field" id="ng-row">
+      <label>NG จำนวน:</label>
+      <input type="number" name="ng" required inputmode="numeric">
+    </div>
+    <div class="stop-extra-field" id="rework-row">
+      <label>Rework จำนวน:</label>
+      <input type="number" name="rework" required inputmode="numeric">
+    </div>
     <button type="submit">กดเพื่อส่ง</button>
   </form>
 
@@ -581,7 +587,10 @@
       if (qrReader.querySelector('.scan-line')) qrReader.querySelector('.scan-line').remove();
     }
     if (id === 'start-form') fillJobInfo('start-job-info');
-    if (id === 'stop-form') fillJobInfo('stop-job-info');
+    if (id === 'stop-form') {
+      fillJobInfo('stop-job-info');
+      updateStopFormFields();
+    }
   }
 
   // Fill job info fields
@@ -882,6 +891,42 @@ function closeOpenJobsSelector() {
   let loader = document.getElementById('open-jobs-loading');
   if (loader) loader.remove();
 }
+
+function updateStopFormFields() {
+  const stopForm = document.getElementById('stop-form');
+  if (!stopForm) return;
+  const processNameSelect = stopForm.querySelector('[name="processName"]');
+  const fgInput = stopForm.querySelector('[name="fg"]');
+  const ngInput = stopForm.querySelector('[name="ng"]');
+  const reworkInput = stopForm.querySelector('[name="rework"]');
+  const fgRow = document.getElementById('fg-row');
+  const ngRow = document.getElementById('ng-row');
+  const reworkRow = document.getElementById('rework-row');
+  if (!processNameSelect || !fgInput || !ngInput || !reworkInput || !fgRow || !ngRow || !reworkRow) return;
+  function updateFields() {
+    const selected = processNameSelect.value.replace(/\s+/g, ' ').trim().toLowerCase();
+    if (selected === 'machine setting') {
+      fgInput.required = false;
+      ngInput.required = false;
+      reworkInput.required = false;
+      fgRow.style.display = 'none';
+      ngRow.style.display = 'none';
+      reworkRow.style.display = 'none';
+    } else {
+      fgInput.required = true;
+      ngInput.required = true;
+      reworkInput.required = true;
+      fgRow.style.display = '';
+      ngRow.style.display = '';
+      reworkRow.style.display = '';
+    }
+  }
+  processNameSelect.removeEventListener('change', updateFields);
+  processNameSelect.addEventListener('change', updateFields);
+  updateFields();
+}
+
+document.addEventListener('DOMContentLoaded', updateStopFormFields);
 
   // On load, show scan screen
   showScreen('scan-screen');
