@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TPT-CNC JOB LOG</title>
   <link rel="icon" type="image/png" href="JOBLOG LOGO.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1976d2">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="CNC Log">
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <script src="scripts/config.js"></script>
   <script src="scripts/api-service.js"></script>
@@ -265,6 +270,7 @@
 <select name="pauseReasonSelect" style="width:100%; padding:8px; border-radius:8px; border:1.5px solid #90caf9; margin-top:6px;">
 <option value="">-- เลือกเหตุผล --</option>
 <option>รองาน</option>
+<option>ทิ้งเศษ</option>
 <option>Wait for Data inspection</option>
 <option value="other">อื่นๆ โปรดระบุ (Other)</option>
 </select>
